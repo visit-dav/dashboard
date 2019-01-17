@@ -1,0 +1,41 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/curve.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  curve.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      normal curves, zone-centered curves, errors in curve files</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Mark C. Miller </font>
+<font color="#a02030">#  Date:       October 31, 2006 </font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">ca</font> <font color="#4000C0">=</font> <font color="#000000">CurveAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ca</font><font color="#4000C0">.</font><font color="#000000">showPoints</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetDefaultPlotOptions</font><font color="#4000C0">(</font><font color="#000000">ca</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data/zonecent.ultra"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"curve2"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">3</font><font color="#4000C0">,</font> <font color="#0080C0">11</font><font color="#4000C0">)</font>
+<font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"curve1"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"curve1"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">4</font><font color="#4000C0">,</font> <font color="#0080C0">16</font><font color="#4000C0">)</font>
+<font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"curve2"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"curve4"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">4</font><font color="#4000C0">,</font> <font color="#0080C0">25</font><font color="#4000C0">)</font>
+<font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"curve3"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

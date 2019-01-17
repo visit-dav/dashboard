@@ -1,0 +1,39 @@
+<html><body bgcolor="#e0e0e0"><head><title>plots/pseudocolor.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case: pseudocolor.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      meshes    - 2D rectilinear</font>
+<font color="#a02030">#              plots     - pseudocolor </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '1016, '987</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Kevin Griffin</font>
+<font color="#a02030">#  Date:       March 19, 2015</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kevin Griffin, Thu Mar 19 12:00:23 PDT 2015</font>
+<font color="#a02030">#    Add test for drawing pseudocolor plot using a log scaling</font>
+<font color="#a02030">#    and very small min value.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+
+<font color="#000000">pc</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">min</font> <font color="#4000C0">=</font> <font color="#0080C0">1e-5</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">max</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">centering</font> <font color="#4000C0">=</font> <font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">Nodal</font>
+<font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">pc</font><font color="#4000C0">.</font><font color="#000000">Log</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">pc</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"pseudocolor_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

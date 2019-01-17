@@ -1,0 +1,289 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/tecplot.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  tecplot.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      TecPlot files</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Jeremy Meredith</font>
+<font color="#a02030">#  Date:       November 17, 2004</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Hank Childs, Wed Feb 16 07:34:07 PST 2005</font>
+<font color="#a02030">#    Rename variables that have unsupported characters.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Thu Mar 31 17:12:06 PST 2005</font>
+<font color="#a02030">#    Changed the data directory to ../data/tecplot_test_data/tecplot_test_data,</font>
+<font color="#a02030">#    which is now created from a bzipped tar file.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Tue Jul 26 16:27:57 PST 2005</font>
+<font color="#a02030">#    I added a test that has 2D data with a vector expression.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Jeremy Meredith, Wed Sep  7 12:06:04 PDT 2005</font>
+<font color="#a02030">#    Allowed spaces in variable names.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Jeremy Meredith, Mon Jul  7 14:20:12 EDT 2008</font>
+<font color="#a02030">#    The tecplot reader now successfully parses x/y/z coordinate variables</font>
+<font color="#a02030">#    from the simpscat.tec file, so I changed the plot to be a pseudocolor</font>
+<font color="#a02030">#    plot instead of a curve plot.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Sat Mar 13 11:13:26 PST 2010</font>
+<font color="#a02030">#    Change variable names for forbidden characters.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Jeremy Meredith, Fri May 20 09:37:14 EDT 2011</font>
+<font color="#a02030">#    Change subset mesh variable name since files have more than one mesh now.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font>  <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.553771</font><font color="#4000C0">,</font> <font color="#0080C0">0.509362</font><font color="#4000C0">,</font> <font color="#0080C0">0.658702</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Databases</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/2dfed.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"P"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_01"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/3dgeom.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font><font color="#008000">"Zones(mesh)"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_02"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/T3L3CLS17u.plt"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"U"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">=</font><font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowCoords</font><font color="#4000C0">=</font><font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">.01</font><font color="#4000C0">,</font><font color="#0080C0">.03</font><font color="#4000C0">,</font><font color="#4000C0">-</font><font color="#0080C0">.02</font><font color="#4000C0">,</font><font color="#0080C0">.02</font><font color="#4000C0">)</font>
+<font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_03"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/channel.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"U"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_04"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/crystal_plot.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"t"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_05"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/crystal_plot.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/cube.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"R"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_06"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#a02030"># We must skip this one, as it has column-major</font>
+<font color="#a02030"># ordering instead of row-major, and we are</font>
+<font color="#a02030"># expecting row-major.  There is nothing in the</font>
+<font color="#a02030"># tecplot file format to specify which type it is,</font>
+<font color="#a02030"># so this must wait until we have options for</font>
+<font color="#a02030"># the database plugins.  See '2440.</font>
+<font color="#a02030">##OpenDatabase(data_path("tecplot_test_data/cylindrical.tec"))</font>
+
+<font color="#a02030">#AddPlot("Mesh","mesh")</font>
+<font color="#a02030">#DrawPlots()</font>
+<font color="#a02030">#SetTheView()</font>
+<font color="#a02030">#Test("tecplot_07")</font>
+<font color="#a02030">#DeleteAllPlots();</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/febrfeb.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"Temperature"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_08"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/febrfep.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"Temperature"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_09"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/fetebk.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"C"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_10"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/fetetpt.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"C"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_11"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/flow5.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"V"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_12"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/human.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"R"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_13"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/movie.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font><font color="#008000">"Zones(mesh)"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_14"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/multzn2d.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"Temp"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_15"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/order1.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"psi"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_16"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/sample.tp"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font><font color="#008000">"X Velocity"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">=</font><font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_17"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/simp3dbk.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"Density"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_18"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/simp3dpt.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"Density"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_19"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/simpscat.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"T_lb_K_rb_"</font><font color="#4000C0">)</font>
+<font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizePixels</font> <font color="#4000C0">=</font> <font color="#0080C0">6</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">outputMeshType</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_20"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/simpxy.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"Temperature vs/Distance"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_21"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/simpxy2.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"Only Zone/Temperature vs/Distance"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetTheView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_22"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/symmetricFlow.plt"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"VELOCITY"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_23"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"VEL"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">useStride</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View2DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">53.9908</font><font color="#4000C0">,</font> <font color="#0080C0">74.1434</font><font color="#4000C0">,</font> <font color="#0080C0">66.5995</font><font color="#4000C0">,</font> <font color="#0080C0">88.2732</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewportCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.2</font><font color="#4000C0">,</font> <font color="#0080C0">0.95</font><font color="#4000C0">,</font> <font color="#0080C0">0.15</font><font color="#4000C0">,</font> <font color="#0080C0">0.95</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameActivationMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Off</font>  <font color="#a02030"># On, Off, Auto</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameAutoThreshold</font> <font color="#4000C0">=</font> <font color="#0080C0">100</font>
+<font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_24"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"tecplot_test_data/pointmesh.tec"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"tecplot_25"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

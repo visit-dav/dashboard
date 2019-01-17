@@ -1,0 +1,66 @@
+<html><body bgcolor="#e0e0e0"><head><title>rendering/lighting.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  lighting.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D rectilinear, one domain</font>
+<font color="#a02030">#              plots     - pseudocolor</font>
+<font color="#a02030">#              operators - slicing, elevation</font>
+<font color="#a02030">#              selection - no</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  8017</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       May 6, 2007</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">View3DAtts</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.58136</font><font color="#4000C0">,</font> <font color="#0080C0">0.782415</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.223267</font><font color="#4000C0">)</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.66382</font><font color="#4000C0">)</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.259676</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.0816327</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.962239</font><font color="#4000C0">)</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.728621</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.45724</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.45724</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">View3DAtts</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.66382</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">View3DAtts</font><font color="#4000C0">)</font>
+
+<font color="#000000">light0</font> <font color="#4000C0">=</font> <font color="#000000">GetLight</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">enabledFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">type</font> <font color="#4000C0">=</font> <font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">Camera</font>  <font color="#a02030"># Ambient, Object, Camera</font>
+<font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">direction</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">color</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">light0</font><font color="#4000C0">.</font><font color="#000000">brightness</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetLight</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#000000">light0</font><font color="#4000C0">)</font>
+<font color="#000000">light1</font> <font color="#4000C0">=</font> <font color="#000000">GetLight</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">enabledFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">type</font> <font color="#4000C0">=</font> <font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">Ambient</font>  <font color="#a02030"># Ambient, Object, Camera</font>
+<font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">direction</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">color</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">light1</font><font color="#4000C0">.</font><font color="#000000">brightness</font> <font color="#4000C0">=</font> <font color="#0080C0">0.47</font>
+<font color="#000000">SetLight</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#000000">light1</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># In SR mode, bug '8017 was that the ambient would get turned off on</font>
+<font color="#a02030"># the second save.</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"lighting_01"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"lighting_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

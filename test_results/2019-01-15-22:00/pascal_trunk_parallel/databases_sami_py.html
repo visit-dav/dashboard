@@ -1,0 +1,79 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/sami.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  sami.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      sami files </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Mark C. Miller </font>
+<font color="#a02030">#  Date:       October 12, 2006 </font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#000000">RequiredDatabasePlugin</font><font color="#4000C0">(</font><font color="#008000">"SAMI"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test the main mesh</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"sami_test_data/bdw.sami"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">=</font><font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.433013</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.75</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.25</font><font color="#4000C0">,</font> <font color="#0080C0">0.866025</font><font color="#4000C0">,</font> <font color="#0080C0">0.433013</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_01"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test the material object</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font><font color="#008000">"mat"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_02"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test a node set</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"nodesets/sl5m"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_03"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test a couple of slide plots</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"slide_0/master"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"slide_1/master"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"slide_2/slave"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"slide_3/slave"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_04"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test a multi-part sami file</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"sami_test_data/sample_sami.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"global_node_numbers"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">=</font><font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.866025</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_05"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font><font color="#008000">"mat"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_06"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># turn off material 2 and domain 0</font>
+<font color="#000000">mat2SetId</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1</font>
+<font color="#000000">dom0SetId</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1</font>
+<font color="#000000">silr</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">NumSets</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#C00000">if</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"002"</font><font color="#4000C0">:</font>
+        <font color="#000000">mat2SetId</font> <font color="#4000C0">=</font> <font color="#000000">i</font>
+    <font color="#C00000">if</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"domain0"</font><font color="#4000C0">:</font>
+        <font color="#000000">dom0SetId</font> <font color="#4000C0">=</font> <font color="#000000">i</font>
+<font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#000000">mat2SetId</font><font color="#4000C0">)</font>
+<font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#000000">dom0SetId</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"sami_07"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

@@ -1,0 +1,193 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/mili.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  mili.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D unstructured,multi-domain, </font>
+<font color="#a02030">#              plots     - Pseudocolor, mesh</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       March 31, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Fri Oct  7 16:58:05 PDT 2005</font>
+<font color="#a02030">#    Test ratio of volumes with material selection (only works on time</font>
+<font color="#a02030">#    varying Lagrangian calculations, like those in Mili files).</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Bonnell, Wed May  6 17:33:02 PDT 2009</font>
+<font color="#a02030">#    Substituted non-existent var "derived/stress/eff_stress" with</font>
+<font color="#a02030">#    "derived/eff_stress"</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Thu Mar 25 09:57:34 PDT 2010</font>
+<font color="#a02030">#    Added call(s) to DrawPlots() b/c of changes to the default plot state</font>
+<font color="#a02030">#    behavior when an operator is added.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Thu Aug 26 14:47:36 PDT 2010</font>
+<font color="#a02030">#    Change set ids due to SIL generation change.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#000000">RequiredDatabasePlugin</font><font color="#4000C0">(</font><font color="#008000">"Mili"</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mili_test_data/m_plot.mili"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"materials1_no_free_nodes(mesh1_no_free_nodes)"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.31</font><font color="#4000C0">,</font> <font color="#0080C0">0.35</font><font color="#4000C0">,</font> <font color="#0080C0">0.88</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">101</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.38</font><font color="#4000C0">,</font> <font color="#0080C0">0.34</font><font color="#4000C0">,</font> <font color="#0080C0">0.85</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">14.1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">thres</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">thres</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">thres</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"sand"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">thres</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030"># We have to test a *lot* of scalar quantities, because they correspond to</font>
+<font color="#a02030"># a lot of different expressions.  On the plus side, we are getting a lot</font>
+<font color="#a02030"># of code coverage out of this.</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"derived/acceleration/mag"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/pressure"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_05"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/stress/x"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_06"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/stress/z"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_07"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/stress/xy"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_08"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/stress/yz"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_09"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/stress/xz"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_10"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/eff_stress"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_11"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_dev_stress/1"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_12"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_dev_stress/2"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_13"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_dev_stress/3"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_14"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/max_shear_stress"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_15"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_stress/1"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_16"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_stress/2"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_17"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"derived/prin_stress/3"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_18"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"mesh1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_19"</font><font color="#4000C0">)</font>
+
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">60</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_20"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"bend"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_21"</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">autoScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_22"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Tensor"</font><font color="#4000C0">,</font> <font color="#008000">"stress"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_23"</font><font color="#4000C0">)</font>
+
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">TensorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">useStride</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"calewhite"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_24"</font><font color="#4000C0">)</font>
+
+<font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#0080C0">3</font><font color="#4000C0">)</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#0080C0">5</font><font color="#4000C0">)</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#0080C0">6</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_25"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"mesh1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"mesh1_free_nodes"</font><font color="#4000C0">)</font>
+<font color="#000000">matts</font> <font color="#4000C0">=</font> <font color="#000000">MeshAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">matts</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">matts</font><font color="#4000C0">.</font><font color="#000000">Icosahedron</font>
+<font color="#000000">matts</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">matts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_26"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font><font color="#008000">"free_nodes/nodvel"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_27"</font><font color="#4000C0">)</font>
+
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">90</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_28"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"ratio"</font><font color="#4000C0">,</font> <font color="#008000">"volume(mesh1_no_free_nodes) / conn_cmfe(volume(&lt;[0]i:mesh1_no_free_nodes&gt;), mesh1_no_free_nodes)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"ratio"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_29"</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOffAll</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOnSet</font><font color="#4000C0">(</font><font color="#0080C0">12</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">sil</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_30"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mili_test_data/m_plot.mili"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a mili database with time-invariant nodal positions</font>
+<font color="#a02030">#</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mili_test_data/m1_plot.mili"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">5</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"temp"</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_31"</font><font color="#4000C0">)</font>
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">10</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_32"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh1"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_33"</font><font color="#4000C0">)</font>
+<font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">6</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mili_34"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

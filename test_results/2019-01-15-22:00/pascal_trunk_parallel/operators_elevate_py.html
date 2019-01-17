@@ -1,0 +1,143 @@
+<html><body bgcolor="#e0e0e0"><head><title>operators/elevate.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  elevate.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 2D rectilinear</font>
+<font color="#a02030">#                          3D rectilinear, multiple domain,</font>
+<font color="#a02030">#                          2D curvilinear, multiple domain</font>
+<font color="#a02030">#              plots     - pc, mesh, filled boundary</font>
+<font color="#a02030">#              operators - elevate</font>
+<font color="#a02030">#              selection - none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '5379, '5934 '6260, '6768</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       February 3, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Tue Jun  7 14:16:02 PDT 2005</font>
+<font color="#a02030">#    Add tests for lighting of slices after elevation.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Tue Nov 15 07:17:22 PST 2005</font>
+<font color="#a02030">#    Add tests for macro expressions as secondary variables.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Thu Jan 10 15:52:00 PST 2008</font>
+<font color="#a02030">#    Add test for recenter expression with material plot.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Wed Jan 16 17:26:03 PST 2008</font>
+<font color="#a02030">#    Add testing for the "zeroFlag".</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#a02030">#One zonal variable</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.707</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0.707</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate01"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#One nodal variable</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#Primary variable zonal, Secondary variable zonal </font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"p"</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font> <font color="#4000C0">=</font> <font color="#000000">ElevateAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"d"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate03"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#Primary variable zonal, secondary nodal.</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate04"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#Primary variable nodal, secondary nodal.</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate05"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#Primary variable nodal, secondary zonal.</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"p"</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">useXYLimits</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate06"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"quadmesh2d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"p"</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">useXYLimits</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate07"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">useXYLimits</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate08"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate09"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Testing expressions.  Test that macro expressions work as secondary</font>
+<font color="#a02030"># variables ('6768).</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"vv"</font><font color="#4000C0">,</font> <font color="#008000">"hgslice+polar_radius(Mesh2D)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hgslice"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"vv"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate10"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Filled boundary with recentered expression</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"d2"</font><font color="#4000C0">,</font> <font color="#008000">"recenter(d)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">elevate_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"d2"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">elevate_atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate11"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Boundary plots that are elevated by zero height (no variable). '8346.</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"ucd2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Boundary"</font><font color="#4000C0">,</font> <font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ElevateAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">zeroFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"elevate12"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>
