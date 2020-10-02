@@ -1,0 +1,248 @@
+<html><body bgcolor="#e0e0e0"><head><title>hybrid/matvf.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  expressions.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D unstructured, multi- domain</font>
+<font color="#a02030">#                          3D rectilinear, single domain</font>
+<font color="#a02030">#              plots     - Pseudocolor</font>
+<font color="#a02030">#              operators - Threshold</font>
+<font color="#a02030">#              selection - Material</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '2415 '3939 '5521</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       August 13, 2003</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Mon Oct 20 16:32:46 PDT 2003</font>
+<font color="#a02030">#    Added bigsil portion to test '3939 (matvf with databases that create</font>
+<font color="#a02030">#    ghost zones).</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Mon Jan  3 09:28:39 PST 2005</font>
+<font color="#a02030">#    Added tests for materror.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Tue Feb 12 15:16:36 PST 2008</font>
+<font color="#a02030">#    Added explicit tests for matvf w/ ghost zones. </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Wed Apr  9 11:17:22 PDT 2008</font>
+<font color="#a02030">#    Added new test for post ghost info.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Thu Mar 25 09:57:34 PDT 2010</font>
+<font color="#a02030">#    Added call(s) to DrawPlots() b/c of changes to the default plot state</font>
+<font color="#a02030">#    behavior when an operator is added.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"m1"</font><font color="#4000C0">,</font> <font color="#008000">'matvf(mat1, ["1", "3"])'</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"m1"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.17</font><font color="#4000C0">,</font> <font color="#0080C0">0.74</font><font color="#4000C0">,</font> <font color="#0080C0">0.64</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.31</font><font color="#4000C0">,</font> <font color="#0080C0">0.65</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.68</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.01</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">upperBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.99</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">sil</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">matsets</font> <font color="#4000C0">=</font> <font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">SetsInCategory</font><font color="#4000C0">(</font><font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOffAll</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOnSet</font><font color="#4000C0">(</font><font color="#000000">matsets</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">sil</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_ucd3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"m1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.82</font><font color="#4000C0">,</font> <font color="#0080C0">0.44</font><font color="#4000C0">,</font> <font color="#0080C0">0.37</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">3.3</font><font color="#4000C0">,</font> <font color="#0080C0">10</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.13</font><font color="#4000C0">,</font> <font color="#0080C0">0.76</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.62</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">7.32</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">14.65</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">14.65</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">sil</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">matsets</font> <font color="#4000C0">=</font> <font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">SetsInCategory</font><font color="#4000C0">(</font><font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOffAll</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOnSet</font><font color="#4000C0">(</font><font color="#000000">matsets</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">sil</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_05"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"mbs"</font><font color="#4000C0">,</font> <font color="#008000">'matvf(mat, 1)'</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"bigsil.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"mbs"</font><font color="#4000C0">)</font>
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">upperBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1.1</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.59</font><font color="#4000C0">,</font> <font color="#0080C0">0.33</font><font color="#4000C0">,</font> <font color="#0080C0">0.74</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.18</font><font color="#4000C0">,</font> <font color="#0080C0">0.94</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.28</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.17</font><font color="#4000C0">,</font> <font color="#0080C0">0.74</font><font color="#4000C0">,</font> <font color="#0080C0">0.64</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.31</font><font color="#4000C0">,</font> <font color="#0080C0">0.65</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.68</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_06"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#NOTE: the fix for '3939 included disabling the communication of ghost zones. </font>
+<font color="#a02030"># As a result, the matvf_07 picture will contain internal surfaces that should</font>
+<font color="#a02030"># not be there.  If this ever gets fixed, then the baseline picture will need</font>
+<font color="#a02030"># to be reset.</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.1</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_07"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now test the materror expression.</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"materror1"</font><font color="#4000C0">,</font> <font color="#008000">'materror(mat1, 1)'</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"materror1"</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">sil</font><font color="#4000C0">.</font><font color="#000000">TurnOnAll</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">sil</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.17</font><font color="#4000C0">,</font> <font color="#0080C0">0.74</font><font color="#4000C0">,</font> <font color="#0080C0">0.64</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.31</font><font color="#4000C0">,</font> <font color="#0080C0">0.65</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.68</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_08"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"abs_materror1"</font><font color="#4000C0">,</font> <font color="#008000">'abs(materror1)'</font><font color="#4000C0">)</font>
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.01</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">upperBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1.01</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"abs_materror1"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_09"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now test that it can calculate "volume fractions" using areas.</font>
+<font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">RemoveLastOperator</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_10"</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"thinplane.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#a02030"># tests for matvf w/ ghost zones</font>
+
+<font color="#a02030"># test standard</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"mvf_2"</font><font color="#4000C0">,</font> <font color="#008000">"matvf(mat,2)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"mvf_2"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">min</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">max</font> <font color="#4000C0">=</font> <font color="#0080C0">1.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">centering</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Natural</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_post_ghost_1"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test with ghosts</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">min</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">max</font> <font color="#4000C0">=</font> <font color="#0080C0">1.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">centering</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Nodal</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_post_ghost_2"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># switch back to ensure w/ ghost case caching does not alter w/o ghosts</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">min</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">max</font> <font color="#4000C0">=</font> <font color="#0080C0">1.0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">centering</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Zonal</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_post_ghost_3"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"thinplane.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"bigsil.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#a02030"># test for gradient w/ matvf, to check if post ghosts were correctly </font>
+<font color="#a02030"># requested. </font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"gate"</font><font color="#4000C0">,</font> <font color="#008000">"agrad(dist)[0] * matvf(mat,1)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"gate"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"matvf_post_ghost_4"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

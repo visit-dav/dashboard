@@ -1,0 +1,249 @@
+<html><body bgcolor="#e0e0e0"><head><title>rendering/saveformats.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  saveformats.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      save window formats </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Mark C. Miller </font>
+<font color="#a02030">#  Date:       September 20, 2005 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Jeremy Meredith, Mon Apr 23 14:07:35 EDT 2007</font>
+<font color="#a02030">#    Don't create a mesh plot when we're saving geometry formats, since</font>
+<font color="#a02030">#    the new behavior is to separate plots into different files (as they</font>
+<font color="#a02030">#    typically have different variables and geometry types).</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Tue Feb  2 10:55:43 PST 2010</font>
+<font color="#a02030">#    Fixed problem w/ setting active window that allowed errors to propagate</font>
+<font color="#a02030">#    between test cases.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Apr  7 19:02:29 PDT 2010</font>
+<font color="#a02030">#    Be smarter about testing curve formats while in scalable mode.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030"># Function: FileExists </font>
+<font color="#a02030">#</font>
+<font color="#a02030"># Purpose:</font>
+<font color="#a02030">#   Tests if a file exists and, if the file is being written, waits</font>
+<font color="#a02030">#   until the file size does not change for growthInterval seconds. If the</font>
+<font color="#a02030">#   file exists but is of zero size, that is the same as it NOT existing</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># waitToAppear: number of seconds to wait for the file to first appear</font>
+<font color="#a02030"># growhtInterval: number of seconds between successive stats on the file </font>
+<font color="#a02030">#</font>
+<font color="#a02030"># Programmer: Mark C. Miller</font>
+<font color="#a02030">#             September 20, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#C00000">def</font> <font color="#000000">FileExists</font><font color="#4000C0">(</font><font color="#000000">name</font><font color="#4000C0">,</font> <font color="#000000">waitToAppear</font><font color="#4000C0">,</font> <font color="#000000">growthInterval</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#C00000">if</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#000000">name</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+        <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#000000">waitToAppear</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#000000">name</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#0080C0">0</font>
+    <font color="#000000">curSize</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">stat</font><font color="#4000C0">(</font><font color="#000000">name</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#000000">ST_SIZE</font><font color="#4000C0">]</font>
+    <font color="#C00000">if</font> <font color="#000000">growthInterval</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">curSize</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+            <font color="#C00000">return</font> <font color="#0080C0">0</font>
+    <font color="#C00000">else</font><font color="#4000C0">:</font>
+            <font color="#C00000">return</font> <font color="#0080C0">1</font>
+    <font color="#C00000">while</font> <font color="#0080C0">1</font><font color="#4000C0">:</font>
+        <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#000000">growthInterval</font><font color="#4000C0">)</font>
+        <font color="#000000">size</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">stat</font><font color="#4000C0">(</font><font color="#000000">name</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#000000">ST_SIZE</font><font color="#4000C0">]</font>
+        <font color="#C00000">if</font> <font color="#000000">size</font> <font color="#4000C0">==</font> <font color="#000000">curSize</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">curSize</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+                <font color="#C00000">return</font> <font color="#0080C0">0</font>
+            <font color="#C00000">else</font><font color="#4000C0">:</font>
+                <font color="#C00000">return</font> <font color="#0080C0">1</font>
+            <font color="#000000">curSize</font> <font color="#4000C0">=</font> <font color="#000000">size</font>
+
+<font color="#a02030"># find tif to rgb image convert utility</font>
+<font color="#C00000">if</font> <font color="#008000">'VISIT_TEST_CONVERT'</font> <font color="#C00000">in</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">environ</font><font color="#4000C0">:</font>
+    <font color="#000000">imgConverter</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">environ</font><font color="#4000C0">[</font><font color="#008000">'VISIT_TEST_CONVERT'</font><font color="#4000C0">]</font>
+<font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#008000">"/usr/bin/convert"</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">imgConverter</font> <font color="#4000C0">=</font> <font color="#008000">"/usr/bin/convert"</font>
+<font color="#C00000">else</font><font color="#4000C0">:</font>
+    <font color="#000000">imgConverter</font> <font color="#4000C0">=</font> <font color="#008000">"convert"</font>
+
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030"># Function: SaveFileInfo</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># Purpose:</font>
+<font color="#a02030">#   Return a string representing the appropriate extension for the</font>
+<font color="#a02030">#   given file format and return bools indicating if the format supports</font>
+<font color="#a02030">#   curves, images and/or geometry.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># Programmer: Mark C. Miller</font>
+<font color="#a02030">#             September 20, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#C00000">def</font> <font color="#000000">SaveFileInfo</font><font color="#4000C0">(</font><font color="#000000">fmt</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">swa</font> <font color="#4000C0">=</font> <font color="#000000">SaveWindowAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">POSTSCRIPT</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"ps"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">CURVE</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"curve"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">ULTRA</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"ultra"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">BMP</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"bmp"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">JPEG</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"jpeg"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">PNG</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"png"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">PPM</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"ppm"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">RGB</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"rgb"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">TIFF</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"tif"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">STL</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"stl"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">OBJ</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"obj"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#4000C0">(</font><font color="#000000">fmt</font> <font color="#4000C0">==</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">VTK</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"vtk"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#C00000">else</font><font color="#4000C0">:</font>
+        <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#008000">"unknown"</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">swa</font><font color="#4000C0">=</font><font color="#000000">SaveWindowAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">family</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+
+<font color="#000000">AddWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># I=Image, G=Geometry, C=Curve formats</font>
+<font color="#000000">CFormats</font><font color="#4000C0">=</font><font color="#4000C0">[</font><font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">CURVE</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">POSTSCRIPT</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">ULTRA</font><font color="#4000C0">]</font>
+<font color="#000000">IFormats</font><font color="#4000C0">=</font><font color="#4000C0">[</font><font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">BMP</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">JPEG</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">PNG</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">PPM</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">RGB</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">TIFF</font><font color="#4000C0">]</font>
+<font color="#000000">GFormats</font><font color="#4000C0">=</font><font color="#4000C0">[</font><font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">STL</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">OBJ</font><font color="#4000C0">,</font> <font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">VTK</font><font color="#4000C0">]</font>
+
+<font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">AnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">userInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">databaseInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">legendInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestSaveFormat</font><font color="#4000C0">(</font><font color="#000000">fmt</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">mode</font> <font color="#4000C0">=</font> <font color="#008000">""</font>
+    <font color="#000000">result</font> <font color="#4000C0">=</font> <font color="#008000">"Failed\n"</font>
+    <font color="#4000C0">(</font><font color="#000000">ext</font><font color="#4000C0">,</font> <font color="#000000">isC</font><font color="#4000C0">,</font> <font color="#000000">isI</font><font color="#4000C0">,</font> <font color="#000000">isG</font><font color="#4000C0">)</font> <font color="#4000C0">=</font> <font color="#000000">SaveFileInfo</font><font color="#4000C0">(</font><font color="#000000">fmt</font><font color="#4000C0">)</font>
+    <font color="#000000">swatmp</font> <font color="#4000C0">=</font> <font color="#000000">swa</font>
+    <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">format</font> <font color="#4000C0">=</font> <font color="#000000">fmt</font>
+    <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">outputToCurrentDirectory</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#C00000">if</font> <font color="#000000">isI</font><font color="#4000C0">:</font>
+        <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font> <font color="#4000C0">=</font> <font color="#008000">"saveformat_tmp.%s"</font><font color="#4000C0">%</font><font color="#000000">ext</font>
+    <font color="#C00000">else</font><font color="#4000C0">:</font>
+        <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font> <font color="#4000C0">=</font> <font color="#008000">"saveformat_tmp"</font>
+    <font color="#000000">SetSaveWindowAttributes</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">)</font>
+    <font color="#C00000">try</font><font color="#4000C0">:</font>
+        <font color="#000000">SaveWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#C00000">except</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">TestEnv</font><font color="#4000C0">.</font><font color="#000000">params</font><font color="#4000C0">[</font><font color="#008000">"scalable"</font><font color="#4000C0">]</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"You cannot save non-image formats (e.g. ultra, curve, stl, etc.)"</font> \
+                                 <font color="#008000">" from a window that is currently in scalable rendering mode. You"</font> \
+                                 <font color="#008000">" may force scalable rendering to Never but if the resulting data"</font> \
+                                 <font color="#008000">" is too big for the viewer to handle, it will likely crash"</font> \
+                                 <font color="#008000">" VisIt. For 3D formats, try an export database operation instead."</font> <font color="#4000C0">:</font>
+                <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"saveformat_%s%s"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">mode</font><font color="#4000C0">,</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#008000">"Passed\n"</font><font color="#4000C0">)</font>
+                <font color="#C00000">return</font>
+        <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"saveformat_%s%s"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">mode</font><font color="#4000C0">,</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">result</font><font color="#4000C0">)</font>
+        <font color="#C00000">return</font>
+
+    <font color="#a02030"># depending on the type of format this is, try to</font>
+    <font color="#a02030"># read the file we just created back into VisIt and</font>
+    <font color="#a02030"># put up a plot in window 2. If that succeeds, we'll</font>
+    <font color="#a02030"># say this format's save actually worked</font>
+    <font color="#C00000">if</font> <font color="#000000">isC</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">FileExists</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">ext</font> <font color="#4000C0">==</font> <font color="#008000">"ps"</font><font color="#4000C0">:</font>
+                <font color="#000000">result</font> <font color="#4000C0">=</font> <font color="#008000">"Passed\n"</font> <font color="#a02030"># can only test existence for ps</font>
+            <font color="#C00000">else</font><font color="#4000C0">:</font>
+                <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+                <font color="#C00000">if</font> <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font><font color="#008000">"curve"</font><font color="#4000C0">)</font>
+                    <font color="#C00000">if</font> <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                        <font color="#000000">result</font> <font color="#4000C0">=</font> <font color="#008000">"Passed\n"</font>
+                    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+                    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#000000">isI</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">screenCapture</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+            <font color="#000000">mode</font> <font color="#4000C0">=</font> <font color="#008000">"offscreen_"</font>
+        <font color="#000000">tiffFileName</font> <font color="#4000C0">=</font> <font color="#008000">"%s/saveformat_tmp.tif"</font><font color="#4000C0">%</font><font color="#000000">TestEnv</font><font color="#4000C0">.</font><font color="#000000">params</font><font color="#4000C0">[</font><font color="#008000">"run_dir"</font><font color="#4000C0">]</font>
+        <font color="#000000">tiffFileExists</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+        <font color="#000000">imageFileExists</font> <font color="#4000C0">=</font> <font color="#000000">FileExists</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+        <font color="#a02030"># TODO_WINDOWS ?</font>
+        <font color="#C00000">if</font> <font color="#000000">imageFileExists</font><font color="#4000C0">:</font>
+            <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">system</font><font color="#4000C0">(</font><font color="#008000">"%s %s -compress none %s"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">imgConverter</font><font color="#4000C0">,</font> <font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">,</font> <font color="#000000">tiffFileName</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+            <font color="#000000">tiffFileExists</font> <font color="#4000C0">=</font> <font color="#000000">FileExists</font><font color="#4000C0">(</font><font color="#000000">tiffFileName</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+        <font color="#C00000">if</font> <font color="#000000">tiffFileExists</font><font color="#4000C0">:</font>
+            <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+            <font color="#C00000">if</font> <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">tiffFileName</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"red"</font><font color="#4000C0">)</font>
+                <font color="#C00000">if</font> <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                    <font color="#000000">result</font> <font color="#4000C0">=</font> <font color="#008000">"Passed\n"</font>
+                <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+                <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">tiffFileName</font><font color="#4000C0">)</font>
+    <font color="#C00000">elif</font> <font color="#000000">isG</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">FileExists</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">ext</font> <font color="#4000C0">==</font> <font color="#008000">"stl"</font><font color="#4000C0">:</font>
+                <font color="#000000">meshName</font> <font color="#4000C0">=</font> <font color="#008000">"STL_mesh"</font>
+            <font color="#C00000">elif</font> <font color="#000000">ext</font> <font color="#4000C0">==</font> <font color="#008000">"obj"</font><font color="#4000C0">:</font>
+                <font color="#000000">meshName</font> <font color="#4000C0">=</font> <font color="#008000">"OBJMesh"</font>
+            <font color="#C00000">elif</font> <font color="#000000">ext</font> <font color="#4000C0">==</font> <font color="#008000">"vtk"</font><font color="#4000C0">:</font>
+                <font color="#000000">meshName</font> <font color="#4000C0">=</font> <font color="#008000">"mesh"</font>
+            <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+            <font color="#C00000">if</font> <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#000000">meshName</font><font color="#4000C0">)</font>
+                <font color="#C00000">if</font> <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                    <font color="#000000">result</font> <font color="#4000C0">=</font> <font color="#008000">"Passed\n"</font>
+                <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+                <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">swatmp</font><font color="#4000C0">.</font><font color="#000000">fileName</font><font color="#4000C0">+</font><font color="#008000">"."</font><font color="#4000C0">+</font><font color="#000000">ext</font><font color="#4000C0">)</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"saveformat_%s%s"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">mode</font><font color="#4000C0">,</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">result</font><font color="#4000C0">)</font>
+    <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Curve Formats"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data"</font><font color="#4000C0">,</font><font color="#008000">"c062.curve"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"going_down"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">CFormats</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSaveFormat</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Image Formats via Screen Capture"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data"</font><font color="#4000C0">,</font><font color="#008000">"c062.curve"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"mesh1"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">slider</font> <font color="#4000C0">=</font> <font color="#000000">CreateAnnotationObject</font><font color="#4000C0">(</font><font color="#008000">"TimeSlider"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">IFormats</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSaveFormat</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Image Formats via Off Screen"</font><font color="#4000C0">)</font>
+<font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">screenCapture</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">IFormats</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSaveFormat</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+<font color="#000000">swa</font><font color="#4000C0">.</font><font color="#000000">screenCapture</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Geometry Formats"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"dx"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">GFormats</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSaveFormat</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

@@ -1,0 +1,414 @@
+<html><body bgcolor="#e0e0e0"><head><title>hybrid/vtkm.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  vtkm.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D rectilinear, single domain</font>
+<font color="#a02030">#                          3D curvilinear, single domain</font>
+<font color="#a02030">#                          3D unstructured, single domain</font>
+<font color="#a02030">#                          3D unstructured, multi domain</font>
+<font color="#a02030">#              plots     - Contour, Pseudocolor</font>
+<font color="#a02030">#              operators - Isosurface, Slice</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Eric Brugger</font>
+<font color="#a02030">#  Date:       Wed Sep 19 12:18:14 PDT 2018</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#000000">SetBackendType</font><font color="#4000C0">(</font><font color="#008000">"vtkm"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 2d rectilinear mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect2d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect2d_02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 3d rectilinear mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.4854</font><font color="#4000C0">,</font> <font color="#0080C0">0.3984</font><font color="#4000C0">,</font> <font color="#0080C0">0.7782</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.1209</font><font color="#4000C0">,</font> <font color="#0080C0">0.9122</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.3916</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.8660</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.7321</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.7321</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_01a"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_rect3d_05"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 2d curvilinear mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv2d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv2d_02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 3d curvilinear mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.4854</font><font color="#4000C0">,</font> <font color="#0080C0">0.3984</font><font color="#4000C0">,</font> <font color="#0080C0">0.7782</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">15.</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.1209</font><font color="#4000C0">,</font> <font color="#0080C0">0.9122</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.3916</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">16.0078</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">32.0156</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">32.0156</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_01a"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">15.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">15.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_curv3d_05"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 2d unstructured mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"ucd2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd2d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd2d_02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a 3d unstructured mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"ucd3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.4854</font><font color="#4000C0">,</font> <font color="#0080C0">0.3984</font><font color="#4000C0">,</font> <font color="#0080C0">0.7782</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.1209</font><font color="#4000C0">,</font> <font color="#0080C0">0.9122</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.3916</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">11.4564</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">22.9129</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">22.9129</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_01a"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_ucd3d_05"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test a multi-domain unstructured mesh.</font>
+<font color="#a02030">#</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_ucd3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.4854</font><font color="#4000C0">,</font> <font color="#0080C0">0.3984</font><font color="#4000C0">,</font> <font color="#0080C0">0.7782</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.1209</font><font color="#4000C0">,</font> <font color="#0080C0">0.9122</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.3916</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">11.4564</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">22.9129</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">22.9129</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_multi_ucd3d_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_multi_ucd3d_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">1.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">originPoint</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.</font><font color="#4000C0">,</font> <font color="#0080C0">2.5</font><font color="#4000C0">,</font> <font color="#0080C0">10.</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_multi_ucd3d_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_multi_ucd3d_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourNLevels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">Level</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtkm_multi_ucd3d_05"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

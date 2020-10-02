@@ -1,0 +1,97 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/rect.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  rect.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      rect files </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Mark C. Miller </font>
+<font color="#a02030">#  Date:       May 15, 2008 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Thu Feb 12 01:30:24 PST 2009</font>
+<font color="#a02030">#  Added test for rectilinear mesh case. Re-enabled setting of SIL restriction</font>
+<font color="#a02030">#  which was disabled due to a bug that was resolved back in May, 2008.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Wed Feb 18 17:52:44 PST 2009</font>
+<font color="#a02030">#  Fixed missing AddPlot() call just prior to image 08. Changed name of </font>
+<font color="#a02030">#  curve objects that get re-interpreted.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Kathleen Biagas, Wed Aug 28 09:04:00 MST 2019</font>
+<font color="#a02030">#  Turn off cycling of colors for all Curve plot tests.  Set the colors</font>
+<font color="#a02030">#  individually to match current baseline results.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#a02030"># test the main mesh</font>
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Curvilinear grid files"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"Rect_test_data/curv_data/datafile.rect"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"Mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">=</font><font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">RotateAxis</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">30.0</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_01"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test a variable</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test going forward in time</font>
+<font color="#000000">TimeSliderNextState</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_03"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># test restriction</font>
+<font color="#000000">silr</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">NumSets</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#C00000">if</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"domain2"</font><font color="#4000C0">:</font>
+        <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"Rect_test_data/curv_data/datafile.rect"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Rectilinear grid files"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"Rect_test_data/rect_data/datafile.rect"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"Mesh"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_05"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"myTest"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_06"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"Rect_test_data/rect_data/datafile.rect"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"1D Datasets re-interpreted as curves."</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"Rect_test_data/1d/rect_data/datafile.rect"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"Scalar_Curves/pressure"</font><font color="#4000C0">)</font>
+<font color="#000000">c</font> <font color="#4000C0">=</font> <font color="#000000">CurveAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">showLabels</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">curveColorSource</font> <font color="#4000C0">=</font> <font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">Custom</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">c</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_07"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"Scalar_Curves/density"</font><font color="#4000C0">)</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">c</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TimeSliderNextState</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"rect_08"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>
