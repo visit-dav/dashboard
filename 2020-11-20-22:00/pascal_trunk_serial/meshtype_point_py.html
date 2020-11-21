@@ -1,0 +1,169 @@
+<html><body bgcolor="#e0e0e0"><head><title>meshtype/point.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  point.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D point</font>
+<font color="#a02030">#              plots     - pseudocolor, subset, mesh</font>
+<font color="#a02030">#              operators - none</font>
+<font color="#a02030">#              selection - none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Jeremy Meredith</font>
+<font color="#a02030">#  Date:       May  4, 2004</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modificatons:</font>
+<font color="#a02030">#    Kathleen Bonnell, Thu Aug 19 15:07:23 PDT 2004</font>
+<font color="#a02030">#    Added tests 4-7.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Bonnell, Thu Nov 11 17:28:15 PST 2004 </font>
+<font color="#a02030">#    Added tests 8-17.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Thu Jul 21 15:44:05 PST 2005</font>
+<font color="#a02030">#    Added tests for setting the point size for points rendered as pixels.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Fri Aug 26 13:59:08 PST 2005</font>
+<font color="#a02030">#    Needed to add more rendering tests so I moved the point rendering</font>
+<font color="#a02030">#    stuff to renderpoint.py.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.3</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.8</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"PointVar"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">=</font><font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Axis</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.2</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Point</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizePixels</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#a02030">#Test some more of the point-related atts for the pc plot.</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_point2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.05</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Axis</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"d"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_05"</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.25</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"p"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_06"</font><font color="#4000C0">)</font>
+
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.25</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Icosahedron</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_07"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#Test Subsets of point meshes</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"domains"</font><font color="#4000C0">)</font>
+<font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">SubsetAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizePixels</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_08"</font><font color="#4000C0">)</font>
+
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"d"</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">Icosahedron</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_09"</font><font color="#4000C0">)</font>
+
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"u"</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_10"</font><font color="#4000C0">)</font>
+
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"v"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_11"</font><font color="#4000C0">)</font>
+
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">colorType</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">ColorBySingleColor</font>
+<font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">singleColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_12"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"PointVar"</font><font color="#4000C0">)</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_13"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># the next two not only test using poingSizeVar, but also DataSetVerifier which</font>
+<font color="#a02030"># will reduce the number of values in the var array to match the actual number </font>
+<font color="#a02030"># of points in the point mesh</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"hardyglobal"</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_14"</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#can we scale by a a vector variable?</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"grad"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_15"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"PointMesh"</font><font color="#4000C0">)</font>
+<font color="#000000">m</font> <font color="#4000C0">=</font> <font color="#000000">MeshAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">foregroundFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">meshColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">122</font><font color="#4000C0">,</font> <font color="#0080C0">200</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_16"</font><font color="#4000C0">)</font>
+
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointSizeVarEnabled</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointSizeVar</font> <font color="#4000C0">=</font> <font color="#008000">"PointVar"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"meshtype_point_17"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>
