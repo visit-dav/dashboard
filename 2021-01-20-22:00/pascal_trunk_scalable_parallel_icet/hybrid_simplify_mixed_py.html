@@ -1,0 +1,86 @@
+<html><body bgcolor="#e0e0e0"><head><title>hybrid/simplify_mixed.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  simplify_mixed.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      plots     - filled boundary</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '4363, '6464, '6504, '8082</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       August 19, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030"># </font>
+<font color="#a02030">#    Hank Childs, Fri Sep 28 12:48:54 PDT 2007</font>
+<font color="#a02030">#    Add testing for mixvars with simplify heavily mixed ['8082].</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"boxlib_test_data/2D/plt0822/Header"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"materials"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0084</font><font color="#4000C0">,</font> <font color="#0080C0">0.0215</font><font color="#4000C0">,</font> <font color="#0080C0">0.0920</font><font color="#4000C0">,</font> <font color="#0080C0">0.1034</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewportCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.2</font><font color="#4000C0">,</font> <font color="#0080C0">0.95</font><font color="#4000C0">,</font> <font color="#0080C0">0.15</font><font color="#4000C0">,</font> <font color="#0080C0">0.95</font><font color="#4000C0">)</font>
+<font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed01"</font><font color="#4000C0">)</font>
+
+<font color="#000000">m</font> <font color="#4000C0">=</font> <font color="#000000">MaterialAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">simplifyHeavilyMixedZones</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">maxMaterialsPerZone</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+<font color="#000000">SetMaterialAttributes</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Boundary"</font><font color="#4000C0">,</font> <font color="#008000">"materials"</font><font color="#4000C0">)</font>
+<font color="#000000">b</font> <font color="#4000C0">=</font> <font color="#000000">BoundaryAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">colorType</font> <font color="#4000C0">=</font> <font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">ColorBySingleColor</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">b</font><font color="#4000C0">)</font>
+
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed02"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">maxMaterialsPerZone</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetMaterialAttributes</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"materials"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"thinplane.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">forceMIR</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetMaterialAttributes</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"den"</font><font color="#4000C0">)</font>
+<font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">limitsMode</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">CurrentPlot</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">maxMaterialsPerZone</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+<font color="#000000">SetMaterialAttributes</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+<font color="#000000">ReOpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"thinplane.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed05"</font><font color="#4000C0">)</font>
+
+<font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">maxMaterialsPerZone</font> <font color="#4000C0">=</font> <font color="#0080C0">3</font>
+<font color="#000000">SetMaterialAttributes</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+<font color="#000000">ReOpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"thinplane.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"simplify_mixed06"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

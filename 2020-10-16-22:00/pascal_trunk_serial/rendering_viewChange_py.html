@@ -1,0 +1,351 @@
+<html><body bgcolor="#e0e0e0"><head><title>rendering/viewChange.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  viewChange.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - structured grid </font>
+<font color="#a02030">#              plots     - pc</font>
+<font color="#a02030">#              operators - slice</font>
+<font color="#a02030">#              selection - none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  VisIt00003350, VisIt000032263</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Kathleen Bonnell </font>
+<font color="#a02030">#  Date:       May 14, 2003 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Kathleen Bonnell, Tue Jul  8 21:04:45 PDT 2003 </font>
+<font color="#a02030">#    Changed ViewChangeSliceFlip, to use Flip, then change so that</font>
+<font color="#a02030">#    image remains the same .. necessary do to slice changes.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Bonnell, Wed Jul 16 18:07:33 PDT 2003 </font>
+<font color="#a02030">#    Added more full-frame tests: for Histogram plot, transparent plot,</font>
+<font color="#a02030">#    and plots with ViewExtentsType set to 'actual'.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Tue Mar 14 07:54:20 PST 2006</font>
+<font color="#a02030">#    Changed how full-frame is turned on/off</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Wed Jul 26 14:31:57 PST 2006</font>
+<font color="#a02030">#    Added testing for auto fullframe of some glyphed plots.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Bonnell, Tue Mar  3 13:20:57 PST 2009</font>
+<font color="#a02030">#    Added testing for log-scaling of curves and 2d plots.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">def</font> <font color="#000000">InitAnnotation</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># Turn off most annotation</font>
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">GetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes2D</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes2D</font><font color="#4000C0">.</font><font color="#000000">xAxis</font><font color="#4000C0">.</font><font color="#000000">label</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes2D</font><font color="#4000C0">.</font><font color="#000000">yAxis</font><font color="#4000C0">.</font><font color="#000000">label</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes2D</font><font color="#4000C0">.</font><font color="#000000">xAxis</font><font color="#4000C0">.</font><font color="#000000">title</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes2D</font><font color="#4000C0">.</font><font color="#000000">yAxis</font><font color="#4000C0">.</font><font color="#000000">title</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes3D</font><font color="#4000C0">.</font><font color="#000000">visible</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes3D</font><font color="#4000C0">.</font><font color="#000000">triadFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">axes3D</font><font color="#4000C0">.</font><font color="#000000">bboxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">userInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">databaseInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">legendInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">backgroundMode</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">foregroundColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">backgroundColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">TestViewChangeSliceFlip</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Testing view changes with slice flip"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave0000.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+    <font color="#000000">slice</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">slice</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">slice</font><font color="#4000C0">.</font><font color="#000000">axisType</font> <font color="#4000C0">=</font> <font color="#000000">slice</font><font color="#4000C0">.</font><font color="#000000">ZAxis</font>
+    <font color="#000000">slice</font><font color="#4000C0">.</font><font color="#000000">flip</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">slice</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># We want to capture the image after the flip, to ensure</font>
+    <font color="#a02030"># the frame and axes are still drawn correctly.</font>
+    <font color="#000000">slice</font><font color="#4000C0">.</font><font color="#000000">flip</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">slice</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeSliceFlip"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestViewChangeFullFrame</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Testing view changes with fullframe"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># We want to capture the image after toggling full frame mode, </font>
+    <font color="#a02030"># to ensure frame and axes are still drawn correctly.</font>
+
+    <font color="#a02030"># Turn full frame mode ON</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameActivationMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">On</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Does a transparent actor maintain the full frame mode? </font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">SetOpacityType</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Constant</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">opacity</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font><font color="#4000C0">;</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_02"</font><font color="#4000C0">)</font>
+
+
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">SetOpacityType</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">FullyOpaque</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Turn full frame mode OFF</font>
+    <font color="#000000">ToggleFullFrameMode</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Clip"</font><font color="#4000C0">)</font>
+    <font color="#000000">c</font> <font color="#4000C0">=</font> <font color="#000000">ClipAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">plane1Origin</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">3</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">plane1Normal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">c</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetViewExtentsType</font><font color="#4000C0">(</font><font color="#008000">"actual"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Turn full frame mode ON</font>
+    <font color="#000000">ToggleFullFrameMode</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_03"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Turn full frame mode OFF</font>
+    <font color="#000000">ToggleFullFrameMode</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_04"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Turn full frame mode ON</font>
+    <font color="#000000">ToggleFullFrameMode</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetViewExtentsType</font><font color="#4000C0">(</font><font color="#008000">"original"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_05"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Histogram"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_06"</font><font color="#4000C0">)</font>
+    <font color="#000000">h</font> <font color="#4000C0">=</font> <font color="#000000">HistogramAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">h</font><font color="#4000C0">.</font><font color="#000000">numBins</font> <font color="#4000C0">=</font> <font color="#0080C0">5</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">h</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeFullFrame_07"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># cleanup for next test</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameActivationMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Auto</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestViewChangeFullFrameWithGlyphs</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Testing view changes with fullframe and glyphed plots"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"fullframe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"fullframe"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_00"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vec"</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nVectors</font> <font color="#4000C0">=</font> <font color="#0080C0">800</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Make sure it kicks in when the vector plot is the only plot.</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vec"</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nVectors</font> <font color="#4000C0">=</font> <font color="#0080C0">800</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test a Pseudocolor plot of point mesh data</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"rad"</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">5e+8</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Axis</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_04"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test a Mesh plot of a point mesh</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"pointmesh"</font><font color="#4000C0">)</font>
+    <font color="#000000">m</font> <font color="#4000C0">=</font> <font color="#000000">MeshAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointType</font> <font color="#4000C0">=</font> <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">Box</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">pointSize</font> <font color="#4000C0">=</font> <font color="#0080C0">5e+8</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeAutoFF_05"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestViewChangeLogScaling2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Testing view changes with log scaling of 2D plots"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#7944  ensure that changing curve view scaling does not affect 2D.</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScale2D_00"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#8563  using view window coords to put a plot into a range suitable </font>
+    <font color="#a02030">#      for log-scaling</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameActivationMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Off</font>
+    <font color="#000000">wc</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowCoords</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowCoords</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1e-13</font><font color="#4000C0">,</font> <font color="#0080C0">0.25</font><font color="#4000C0">,</font> <font color="#000000">wc</font><font color="#4000C0">[</font><font color="#0080C0">2</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">wc</font><font color="#4000C0">[</font><font color="#0080C0">3</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScale2D_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">xScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScale2D_02"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#clean up for next test</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">xScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">yScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestViewChangeLogScalingCurves</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Testing view changes with log scaling of curves"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># '8880:  Add curve plot.  Set scaling to log-log.  Add another curve plot.</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data/distribution.ultra"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"Laplace Distribution"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font> <font color="#4000C0">=</font> <font color="#000000">CurveAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColorSource</font> <font color="#4000C0">=</font> <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">Custom</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># For log scaling to work with these curves, we need to transform</font>
+    <font color="#a02030"># first.</font>
+
+    <font color="#000000">trans</font> <font color="#4000C0">=</font> <font color="#000000">TransformAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">trans</font><font color="#4000C0">.</font><font color="#000000">doTranslate</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">trans</font><font color="#4000C0">.</font><font color="#000000">translateX</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">trans</font><font color="#4000C0">.</font><font color="#000000">translateY</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+    <font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">trans</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Transform"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_00"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font>  <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"Log Normal Distribution"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Transform"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"Exponential Distribution"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Transform"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font>  <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#8660  add log scaling to a curve put in an appropriate range via the</font>
+    <font color="#a02030">#      box operator</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data/c063.curve"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"flat"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"going_down"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"going_up"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"parabolic"</font><font color="#4000C0">)</font>
+    <font color="#000000">curveAtts</font><font color="#4000C0">.</font><font color="#000000">curveColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">135</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">curveAtts</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">2</font><font color="#4000C0">,</font> <font color="#0080C0">3</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Box"</font><font color="#4000C0">)</font>
+    <font color="#000000">b</font> <font color="#4000C0">=</font> <font color="#000000">BoxAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">minx</font> <font color="#4000C0">=</font> <font color="#0080C0">0.4</font>
+    <font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">maxx</font> <font color="#4000C0">=</font> <font color="#0080C0">0.8</font>
+    <font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">miny</font> <font color="#4000C0">=</font> <font color="#0080C0">0.000001</font>
+    <font color="#000000">b</font><font color="#4000C0">.</font><font color="#000000">maxy</font> <font color="#4000C0">=</font> <font color="#0080C0">10000</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">b</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">SetViewExtentsType</font><font color="#4000C0">(</font><font color="#008000">"actual"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_04"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font>  <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LOG</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ViewChangeLogScaleCurves_05"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#clean up for next test</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetViewCurve</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">domainScale</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rangeScale</font>  <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">LINEAR</font>
+    <font color="#000000">SetViewCurve</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">ViewChangeMain</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">InitAnnotation</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TestViewChangeSliceFlip</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TestViewChangeFullFrame</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TestViewChangeFullFrameWithGlyphs</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TestViewChangeLogScaling2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TestViewChangeLogScalingCurves</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Call the main function</font>
+<font color="#000000">ViewChangeMain</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

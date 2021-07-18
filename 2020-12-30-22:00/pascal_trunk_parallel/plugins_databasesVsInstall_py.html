@@ -1,0 +1,30 @@
+<html><body bgcolor="#e0e0e0"><head><title>plugins/databasesVsInstall.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES:    nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  databasesVsInstall.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      Building database plugins against an installed version of VisIt</font>
+<font color="#a02030">#              </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Kathleen Biagas </font>
+<font color="#a02030">#  Date:       November 8, 2018 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Eric Brugger, Wed Jun 26 09:32:06 PDT 2019</font>
+<font color="#a02030">#    Removed the ccm readler.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Tue Nov 26 10:23:31 PST 2019</font>
+<font color="#a02030">#    Modified to pass a 'test-this' list instead of a 'skip-this' list.</font>
+<font color="#a02030">#    Plugins chosen based on third-party dependence, ability to auto-regen</font>
+<font color="#a02030">#    their CMakeLists.txt and tests currently available to run against the</font>
+<font color="#a02030">#    version built (to be added at a future time).</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">"plugins"</font><font color="#4000C0">,</font> <font color="#008000">"pluginVsInstallHelpers"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">do_plugin_type</font><font color="#4000C0">(</font><font color="#008000">"databases"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">"BOV"</font><font color="#4000C0">,</font> <font color="#008000">"Blueprint"</font><font color="#4000C0">,</font> <font color="#008000">"CGNS"</font><font color="#4000C0">,</font> <font color="#008000">"Cale"</font><font color="#4000C0">,</font> <font color="#008000">"Claw"</font><font color="#4000C0">,</font> <font color="#008000">"Exodus"</font><font color="#4000C0">,</font> <font color="#008000">"FITS"</font><font color="#4000C0">,</font> <font color="#008000">"H5Part"</font><font color="#4000C0">,</font> <font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#008000">"Mili"</font><font color="#4000C0">,</font> <font color="#008000">"SAMRAI"</font><font color="#4000C0">,</font> <font color="#008000">"VTK"</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+<font color="#a02030"># for future use</font>
+<font color="#a02030">#do_tests("database", ["bov.py", "blueprint.py", "CGNS.py", "Cale.py", "claw.py", "exodus.py", "FITS.py", "h5part.py", "mfem.py", "mili.py", "samrai.py", "vtk.py"])</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>
