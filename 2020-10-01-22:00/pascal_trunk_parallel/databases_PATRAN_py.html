@@ -1,0 +1,238 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/PATRAN.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  PATRAN.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D unstructured, single domain</font>
+<font color="#a02030">#              plots     - Mesh</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Brad Whitlock</font>
+<font color="#a02030">#  Date:       Fri Jul 29 17:30:33 PST 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Notes:      The data for these tests are supposed to be PATRAN versions of</font>
+<font color="#a02030">#              some of the data in the NASTRAN tests.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">def</font> <font color="#000000">AddMeshPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"mesh"</font><font color="#4000C0">)</font>
+    <font color="#000000">m</font> <font color="#4000C0">=</font> <font color="#000000">MeshAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">legendFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">opaqueColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">153</font><font color="#4000C0">,</font> <font color="#0080C0">204</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">backgroundFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">foregroundFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">m</font><font color="#4000C0">.</font><font color="#000000">meshColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">TurnMaterialsOff</font><font color="#4000C0">(</font><font color="#008000">"default"</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">AddPseudocolorPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"one"</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"rainbow"</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">SetOpacityType</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">Constant</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">opacity</font> <font color="#4000C0">=</font> <font color="#0080C0">0.2</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#000000">TurnMaterialsOff</font><font color="#4000C0">(</font><font color="#008000">"default"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">db</font> <font color="#4000C0">=</font> <font color="#008000">"pipe.neu"</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#000000">db</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddMeshPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.786306</font><font color="#4000C0">,</font> <font color="#0080C0">0.379526</font><font color="#4000C0">,</font> <font color="#0080C0">0.487527</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.149902</font><font color="#4000C0">,</font> <font color="#0080C0">0.212562</font><font color="#4000C0">,</font> <font color="#0080C0">0.124929</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.316186</font><font color="#4000C0">,</font> <font color="#0080C0">0.925114</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.210215</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.585963</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.17193</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.17193</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0173275</font><font color="#4000C0">,</font> <font color="#0080C0">0.033058</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.45734</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.149902</font><font color="#4000C0">,</font> <font color="#0080C0">0.212562</font><font color="#4000C0">,</font> <font color="#0080C0">0.124929</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN1_0"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v2</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.786306</font><font color="#4000C0">,</font> <font color="#0080C0">0.379526</font><font color="#4000C0">,</font> <font color="#0080C0">0.487527</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.149902</font><font color="#4000C0">,</font> <font color="#0080C0">0.212562</font><font color="#4000C0">,</font> <font color="#0080C0">0.124929</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.316186</font><font color="#4000C0">,</font> <font color="#0080C0">0.925114</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.210215</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.585963</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.17193</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.17193</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.108127</font><font color="#4000C0">,</font> <font color="#0080C0">0.0971661</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">6.92887</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.149902</font><font color="#4000C0">,</font> <font color="#0080C0">0.212562</font><font color="#4000C0">,</font> <font color="#0080C0">0.124929</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v2</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN1_1"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPseudocolorPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN1_2"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">db</font> <font color="#4000C0">=</font> <font color="#008000">"waterjacket.neu"</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#000000">db</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddMeshPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.65317</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.673371</font><font color="#4000C0">,</font> <font color="#0080C0">0.346324</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.1125</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.225064</font><font color="#4000C0">,</font> <font color="#0080C0">0.264053</font><font color="#4000C0">,</font> <font color="#0080C0">0.937882</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.289925</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.579849</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">0.579849</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0984407</font><font color="#4000C0">,</font> <font color="#0080C0">0.0467479</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.40003</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.1125</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN2_0"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v2</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.65317</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.673371</font><font color="#4000C0">,</font> <font color="#0080C0">0.346324</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.1125</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.225064</font><font color="#4000C0">,</font> <font color="#0080C0">0.264053</font><font color="#4000C0">,</font> <font color="#0080C0">0.937882</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.289925</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.579849</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">0.579849</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.100347</font><font color="#4000C0">,</font> <font color="#0080C0">0.0410472</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">7.7658</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.03</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.1125</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v2</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN2_1"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPseudocolorPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN2_2"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">db</font> <font color="#4000C0">=</font> <font color="#008000">"intake.neu"</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#000000">db</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddMeshPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.61876</font><font color="#4000C0">,</font> <font color="#0080C0">0.311053</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.721375</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0.011</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.0935</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.208418</font><font color="#4000C0">,</font> <font color="#0080C0">0.950364</font><font color="#4000C0">,</font> <font color="#0080C0">0.231021</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.198752</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.397503</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">0.397503</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0151275</font><font color="#4000C0">,</font> <font color="#0080C0">0.00167627</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.43299</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0.011</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.0935</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN3_0"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v2</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.61876</font><font color="#4000C0">,</font> <font color="#0080C0">0.311053</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.721375</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0.011</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.0935</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.208418</font><font color="#4000C0">,</font> <font color="#0080C0">0.950364</font><font color="#4000C0">,</font> <font color="#0080C0">0.231021</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.198752</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.397503</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">0.397503</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.101283</font><font color="#4000C0">,</font> <font color="#0080C0">0.0396808</font><font color="#4000C0">)</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">6.28038</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v2</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0.011</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.0935</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v2</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN3_1"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPseudocolorPlot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN3_2"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test4</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">db</font> <font color="#4000C0">=</font> <font color="#008000">"patout.neu"</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#000000">db</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">,</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"named_components"</font><font color="#4000C0">)</font>
+    <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#000000">FilledBoundaryAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">legendFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.765801</font><font color="#4000C0">,</font> <font color="#0080C0">0.0434351</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.641609</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">3175.88</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">94.6135</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">37.6065</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.625813</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.179298</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.759085</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">3328.81</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">6657.62</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">6657.62</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.0688128</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.239564</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">92.5361</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">3175.88</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">94.6135</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">37.6065</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN4_0"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"elementMats"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN4_1"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"elementIds"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"PATRAN4_2"</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># Set the window background color</font>
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">GetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">backgroundMode</font> <font color="#4000C0">=</font> <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">Solid</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">backgroundColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">180</font><font color="#4000C0">,</font> <font color="#0080C0">180</font><font color="#4000C0">,</font> <font color="#0080C0">180</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">foregroundColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"one"</font><font color="#4000C0">,</font> <font color="#008000">"(zoneid(mesh) + 1) / (zoneid(mesh) + 1)"</font><font color="#4000C0">)</font>
+    <font color="#000000">datapath</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"PATRAN_test_data"</font><font color="#4000C0">)</font>
+    <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font>
+    <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font>
+    <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font>
+    <font color="#000000">test4</font><font color="#4000C0">(</font><font color="#000000">datapath</font><font color="#4000C0">)</font>
+
+<font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

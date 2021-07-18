@@ -1,0 +1,28 @@
+<html><body bgcolor="#e0e0e0"><head><title>plugins/operatorsVsInstall.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES:    nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  operatorsVsInstall.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      Building operator plugins against an installed version of VisIt</font>
+<font color="#a02030">#              </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Kathleen Biagas </font>
+<font color="#a02030">#  Date:       November 8, 2018 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Kathleen Biagas, Tue Nov 26 10:23:31 PST 2019</font>
+<font color="#a02030">#    Modified to pass a 'test-this' list instead of a 'skip-this' list.</font>
+<font color="#a02030">#    Plugins chosen based on external dependence, expression creation, or a</font>
+<font color="#a02030">#    a simple operator, the ability to auto-regen their CMakeLists.txt and</font>
+<font color="#a02030">#    tests currently available to run against the version built (to be added</font>
+<font color="#a02030">#    at a future time).</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">"plugins"</font><font color="#4000C0">,</font> <font color="#008000">"pluginVsInstallHelpers"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">do_plugin_type</font><font color="#4000C0">(</font><font color="#008000">"operators"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">"CartographicProjection"</font><font color="#4000C0">,</font> <font color="#008000">"CracksClipper"</font><font color="#4000C0">,</font> <font color="#008000">"RadialResample"</font><font color="#4000C0">,</font> <font color="#008000">"Slice"</font><font color="#4000C0">,</font> <font color="#008000">"Threshold"</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+<font color="#a02030"># for future use</font>
+<font color="#a02030">#do_tests("operators", ["cart_proj.py", "cracksclipper.py", "radial_resample.py", "slice.py", "threshold.py"])</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>

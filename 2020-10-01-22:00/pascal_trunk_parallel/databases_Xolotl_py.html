@@ -1,0 +1,46 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/Xolotl.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  Xolotl.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      Xolotl hdf5 files</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: James Kress</font>
+<font color="#a02030">#  Date:       Mon Aug 26 13:00:15 EDT 2019</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#000000">RequiredDatabasePlugin</font><font color="#4000C0">(</font><font color="#008000">"Xolotl"</font><font color="#4000C0">)</font>
+
+<font color="#000000">xolotl_0D</font> <font color="#4000C0">=</font> <font color="#008000">"xolotl_test_data/network-PSI2-0D.xolotl"</font>
+<font color="#000000">xolotl_1D</font> <font color="#4000C0">=</font> <font color="#008000">"xolotl_test_data/network-PSI2-1D.xolotl"</font>
+
+<font color="#000000">zeroDVars</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#008000">"Helium/Vacancies"</font><font color="#4000C0">,</font> <font color="#008000">"Helium/Deuterium"</font><font color="#4000C0">,</font> <font color="#008000">"Helium/Interstitial"</font><font color="#4000C0">,</font> <font color="#008000">"Helium/Tritium"</font><font color="#4000C0">]</font>
+<font color="#000000">oneDVars</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#008000">"Helium Concentration"</font><font color="#4000C0">,</font> <font color="#008000">"Deuterium Concentration"</font><font color="#4000C0">,</font> <font color="#008000">"Interstitial Concentration"</font><font color="#4000C0">,</font> <font color="#008000">"Tritium Concentration"</font><font color="#4000C0">]</font>
+
+<font color="#C00000">def</font> <font color="#000000">test</font><font color="#4000C0">(</font><font color="#000000">var_name</font><font color="#4000C0">,</font><font color="#000000">tag_name</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#000000">var_name</font><font color="#4000C0">)</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">PseudocolorAtts</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">PseudocolorAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAtts</font><font color="#4000C0">.</font><font color="#000000">Log</font>  <font color="#a02030"># Linear, Log, Skew</font>
+    <font color="#000000">PseudocolorAtts</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"hot_desaturated"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">PseudocolorAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">file_name</font> <font color="#4000C0">=</font> <font color="#000000">var_name</font><font color="#4000C0">.</font><font color="#000000">replace</font><font color="#4000C0">(</font><font color="#008000">"/"</font><font color="#4000C0">,</font> <font color="#008000">""</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#000000">tag_name</font> <font color="#4000C0">+</font> <font color="#008000">"_"</font> <font color="#4000C0">+</font>  <font color="#000000">file_name</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"0D Example Xolot File"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#000000">xolotl_0D</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">var_name</font> <font color="#C00000">in</font> <font color="#000000">zeroDVars</font><font color="#4000C0">:</font>
+    <font color="#000000">test</font><font color="#4000C0">(</font><font color="#000000">var_name</font><font color="#4000C0">,</font><font color="#008000">"xolotl_0D"</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#000000">xolotl_0D</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"1D Example Xolotl File"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#000000">xolotl_1D</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">var_name</font> <font color="#C00000">in</font> <font color="#000000">oneDVars</font><font color="#4000C0">:</font>
+    <font color="#000000">test</font><font color="#4000C0">(</font><font color="#000000">var_name</font><font color="#4000C0">,</font><font color="#008000">"xolotl_1D"</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#000000">xolotl_1D</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#000000"></font></font></pre></body></html>
