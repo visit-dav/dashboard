@@ -1,0 +1,575 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/export_db.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  export_db.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D unstructured</font>
+<font color="#a02030">#              plots     - Pseudocolor</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '6288, '6290, '6587, '6366</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       July 1, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Thu Sep 15 16:33:48 PDT 2005</font>
+<font color="#a02030">#    Add test for exporting CMFEs as secondary variables ('6587)</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Bonnell, Tue May  2 08:58:01 PDT 2006</font>
+<font color="#a02030">#    Corrected exported database names (from .visit to .vtk).</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Wed Mar 28 11:33:16 PDT 2007</font>
+<font color="#a02030">#    Uncommented tests for '6366, which were previously checked in, but</font>
+<font color="#a02030">#    commented out.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller Fri Aug  8 09:11:44 PDT 2008</font>
+<font color="#a02030">#    Fixed typo of missing '()' on call to DeleteAllPlots</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to switch between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Wed Feb 25 14:08:53 PST 2015</font>
+<font color="#a02030">#    Add Mesh Plot for silo data exported as VTK, to test that mesh name</font>
+<font color="#a02030">#    was properly exported.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Fri Feb 17, 2017</font>
+<font color="#a02030">#    Update for new VTK export options.  Added test4, which tests the new</font>
+<font color="#a02030">#    options.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Alister Maguire, Thu Apr 26 13:31:31 PDT 2018</font>
+<font color="#a02030">#    Added test for bov compression.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Wed May 16, 2018</font>
+<font color="#a02030">#    Use python's gzip instead of subprocess('gunzip') so test will run</font>
+<font color="#a02030">#    correctly on Windows.  Modified AssertTrue calls to have text stating</font>
+<font color="#a02030">#    what is being tested.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Apr 10 10:24:32 PDT 2019</font>
+<font color="#a02030">#    Add tetrahedralize test</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Mon Jan 11 10:32:17 PST 2021</font>
+<font color="#a02030">#    Replace AssertTrue() with TestValueEQ(..., True)</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Thu Jun 24, 2021</font>
+<font color="#a02030">#    Moved test for exporting and plotting different formats to new function.</font>
+<font color="#a02030">#    Added testing of the export-and-plot with changed dirname. (#5462)</font>
+<font color="#a02030">#    Removed cleanup_files since temporary files are written to the _run dir</font>
+<font color="#a02030">#    which gets removed on exit (unless --no-cleanup specified).</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#C00000">import</font> <font color="#000000">time</font>
+<font color="#C00000">import</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font>
+<font color="#C00000">import</font> <font color="#000000">subprocess</font>
+<font color="#C00000">import</font> <font color="#000000">fnmatch</font>
+
+<font color="#C00000">def</font> <font color="#000000">test0</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Set the export database attributes.</font>
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"test_ex_db"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">variables</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">,</font> <font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"test_ex_db2"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"Silo"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase(silo_data_path("globe.silo"))</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"test_ex_db.vtk"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase("test_ex_db.vtk")</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"test_ex_db2.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_02"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase("test_ex_db2.silo")</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"cmfe"</font><font color="#4000C0">,</font> <font color="#008000">"conn_cmfe(coord(&lt;%s:quadmesh&gt;)[1], quadmesh)"</font> <font color="#4000C0">%</font> <font color="#000000">cmfe_silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave0020.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">variables</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"cmfe"</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"test_ex_db3"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteExpression</font><font color="#4000C0">(</font><font color="#008000">"cmfe"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"test_ex_db3.vtk"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"cmfe"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_03"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Ensure meshname was written by creating mesh plot with old db's meshname</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"quadmesh"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_04"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase("test_ex_db3.vtk")</font>
+<font color="#a02030">#    CloseDatabase(silo_data_path("wave.visit"))</font>
+
+<font color="#C00000">def</font> <font color="#000000">VTK_check_binary</font><font color="#4000C0">(</font><font color="#000000">filename</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#C00000">if</font> <font color="#4000C0">(</font><font color="#000000">sys</font><font color="#4000C0">.</font><font color="#000000">version_info</font> <font color="#4000C0">&gt;</font> <font color="#4000C0">(</font><font color="#0080C0">3</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#000000">open</font><font color="#4000C0">(</font><font color="#000000">filename</font><font color="#4000C0">,</font> <font color="#008000">"rt"</font><font color="#4000C0">,</font> <font color="#000000">encoding</font><font color="#4000C0">=</font><font color="#008000">'utf-8'</font><font color="#4000C0">,</font> <font color="#000000">errors</font><font color="#4000C0">=</font><font color="#008000">'ignore'</font><font color="#4000C0">)</font>
+    <font color="#C00000">else</font><font color="#4000C0">:</font>
+        <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#000000">open</font><font color="#4000C0">(</font><font color="#000000">filename</font><font color="#4000C0">,</font> <font color="#008000">"rt"</font><font color="#4000C0">)</font>
+    <font color="#000000">line</font> <font color="#4000C0">=</font> <font color="#008000">""</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">1</font><font color="#4000C0">,</font><font color="#0080C0">2</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">line</font> <font color="#4000C0">=</font> <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">readline</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">b</font> <font color="#4000C0">=</font> <font color="#008000">"BINARY"</font> <font color="#4000C0">==</font> <font color="#000000">line</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">:</font><font color="#0080C0">6</font><font color="#4000C0">]</font>
+    <font color="#C00000">return</font> <font color="#000000">b</font>
+
+
+<font color="#a02030"># Test exporting some surfaces in other formats and plotting the results.</font>
+<font color="#a02030"># e = ExportDBAttributes</font>
+<font color="#a02030"># v = View3D</font>
+<font color="#a02030"># a = AnnotationAttributes</font>
+<font color="#a02030"># count = current test number (used for test names)</font>
+<font color="#a02030"># usingWriteGroups = True or False</font>
+
+<font color="#C00000">def</font> <font color="#000000">export_and_plot</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">v</font><font color="#4000C0">,</font> <font color="#000000">a</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">,</font> <font color="#000000">usingWriteGroups</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+    <font color="#a02030"># formats fields:</font>
+    <font color="#a02030"># {DBName: (no-write-group exported name to read, write-group exported name to read, plot type, var name)}</font>
+
+    <font color="#000000">formats</font> <font color="#4000C0">=</font> <font color="#4000C0">{</font> <font color="#008000">"PLY"</font><font color="#4000C0">:</font>          <font color="#4000C0">(</font><font color="#008000">"export_PLY.ply"</font><font color="#4000C0">,</font>          <font color="#008000">"*.ply"</font><font color="#4000C0">,</font>         <font color="#008000">"Subset"</font><font color="#4000C0">,</font>      <font color="#008000">"PLY_mesh"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"RAW"</font><font color="#4000C0">:</font>          <font color="#4000C0">(</font><font color="#008000">"export_RAW.raw"</font><font color="#4000C0">,</font>          <font color="#008000">"*.raw"</font><font color="#4000C0">,</font>         <font color="#008000">"Subset"</font><font color="#4000C0">,</font>      <font color="#008000">"mesh"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"STL"</font><font color="#4000C0">:</font>          <font color="#4000C0">(</font><font color="#008000">"export_STL.stl"</font><font color="#4000C0">,</font>          <font color="#008000">"*.stl"</font><font color="#4000C0">,</font>         <font color="#008000">"Subset"</font><font color="#4000C0">,</font>      <font color="#008000">"STL_mesh"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"Silo"</font><font color="#4000C0">:</font>         <font color="#4000C0">(</font><font color="#008000">"export_Silo.silo"</font><font color="#4000C0">,</font>        <font color="#008000">"wg_Silo.silo"</font><font color="#4000C0">,</font>  <font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"Tecplot"</font><font color="#4000C0">:</font>      <font color="#4000C0">(</font><font color="#008000">"export_Tecplot.tec"</font><font color="#4000C0">,</font>      <font color="#008000">"*.tec"</font><font color="#4000C0">,</font>         <font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"VTK"</font><font color="#4000C0">:</font>          <font color="#4000C0">(</font><font color="#008000">"export_VTK.visit"</font><font color="#4000C0">,</font>        <font color="#008000">"wg_VTK.visit"</font><font color="#4000C0">,</font>  <font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"WavefrontOBJ"</font><font color="#4000C0">:</font> <font color="#4000C0">(</font><font color="#008000">"export_WavefrontOBJ.obj"</font><font color="#4000C0">,</font> <font color="#008000">"*.obj"</font><font color="#4000C0">,</font>         <font color="#008000">"Subset"</font><font color="#4000C0">,</font>      <font color="#008000">"OBJMesh"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"XYZ"</font><font color="#4000C0">:</font>          <font color="#4000C0">(</font><font color="#008000">"export_XYZ.xyz"</font><font color="#4000C0">,</font>          <font color="#008000">"*.xyz"</font><font color="#4000C0">,</font>         <font color="#008000">"Subset"</font><font color="#4000C0">,</font>      <font color="#008000">"mesh"</font><font color="#4000C0">)</font><font color="#4000C0">,</font>
+                <font color="#008000">"Xmdv"</font><font color="#4000C0">:</font>         <font color="#4000C0">(</font><font color="#008000">"export_Xmdv.visit"</font><font color="#4000C0">,</font>       <font color="#008000">"wg_Xmdv.visit"</font><font color="#4000C0">,</font> <font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+              <font color="#4000C0">}</font>
+
+    <font color="#000000">keys</font> <font color="#4000C0">=</font> <font color="#000000">sorted</font><font color="#4000C0">(</font><font color="#000000">formats</font><font color="#4000C0">.</font><font color="#000000">keys</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">test_name_base</font><font color="#4000C0">=</font><font color="#008000">"export_db_%d"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#0080C0">2</font> <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font> <font color="#C00000">else</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># do all the exports</font>
+    <font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">keys</font><font color="#4000C0">:</font>
+        <font color="#000000">export_name</font><font color="#4000C0">=</font><font color="#008000">"%s_%s"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#008000">"wg"</font> <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font> <font color="#C00000">else</font> <font color="#008000">"export"</font><font color="#4000C0">,</font> <font color="#000000">f</font><font color="#4000C0">)</font>
+        <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#000000">f</font>
+        <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type_fullname</font> <font color="#4000C0">=</font> <font color="#000000">f</font> <font color="#4000C0">+</font> <font color="#008000">"_1.0"</font>
+        <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#000000">export_name</font>
+        <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+        <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># now attempt to read the exported files</font>
+    <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font><font color="#4000C0">:</font>
+        <font color="#000000">files</font> <font color="#4000C0">=</font> <font color="#000000">sorted</font><font color="#4000C0">(</font><font color="#000000">fnmatch</font><font color="#4000C0">.</font><font color="#000000">filter</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">listdir</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">dirname</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#008000">"wg_*"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">keys</font><font color="#4000C0">:</font>
+        <font color="#a02030"># Add the exported data in window 2.</font>
+        <font color="#000000">AddWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+        <font color="#000000">pattern</font> <font color="#4000C0">=</font> <font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font> <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font> <font color="#C00000">else</font> <font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+        <font color="#000000">filelist</font><font color="#4000C0">=</font><font color="#008000">""</font>
+        <font color="#000000">opendbs</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+
+        <font color="#C00000">if</font> <font color="#000000">pattern</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font> <font color="#4000C0">==</font> <font color="#008000">'*'</font><font color="#4000C0">:</font>
+            <font color="#a02030"># Read all of the filenames</font>
+            <font color="#000000">ext</font> <font color="#4000C0">=</font> <font color="#000000">pattern</font><font color="#4000C0">[</font><font color="#0080C0">2</font><font color="#4000C0">:</font><font color="#4000C0">]</font>
+            <font color="#C00000">for</font> <font color="#000000">datafile</font> <font color="#C00000">in</font> <font color="#000000">files</font><font color="#4000C0">:</font>
+                <font color="#C00000">if</font> <font color="#000000">datafile</font><font color="#4000C0">[</font><font color="#4000C0">-</font><font color="#000000">len</font><font color="#4000C0">(</font><font color="#000000">ext</font><font color="#4000C0">)</font><font color="#4000C0">:</font><font color="#4000C0">]</font> <font color="#4000C0">==</font> <font color="#000000">ext</font><font color="#4000C0">:</font>
+                    <font color="#C00000">if</font> <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">datafile</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                        <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">2</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">3</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+                        <font color="#000000">opendbs</font> <font color="#4000C0">=</font> <font color="#000000">opendbs</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">datafile</font><font color="#4000C0">]</font>
+                        <font color="#000000">filelist</font> <font color="#4000C0">=</font> <font color="#000000">filelist</font> <font color="#4000C0">+</font> <font color="#000000">datafile</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font>
+            <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#C00000">else</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">dirname</font><font color="#4000C0">,</font> <font color="#000000">pattern</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                <font color="#000000">md</font> <font color="#4000C0">=</font> <font color="#000000">GetMetaData</font><font color="#4000C0">(</font><font color="#000000">pattern</font><font color="#4000C0">)</font>
+                <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">2</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">formats</font><font color="#4000C0">[</font><font color="#000000">f</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">3</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+                <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+                <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font><font color="#4000C0">:</font>
+                    <font color="#000000">opendbs</font> <font color="#4000C0">=</font> <font color="#000000">opendbs</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">pattern</font><font color="#4000C0">]</font>
+                    <font color="#000000">filelist</font> <font color="#4000C0">=</font> <font color="#000000">filelist</font> <font color="#4000C0">+</font> <font color="#000000">pattern</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font>
+            <font color="#C00000">else</font><font color="#4000C0">:</font>
+                <font color="#C00000">if</font> <font color="#C00000">not</font> <font color="#000000">usingWriteGroups</font><font color="#4000C0">:</font>
+                    <font color="#000000">files</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">listdir</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">dirname</font><font color="#4000C0">)</font>
+                    <font color="#000000">files</font><font color="#4000C0">.</font><font color="#000000">sort</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+                    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#008000">""</font>
+                    <font color="#C00000">for</font> <font color="#000000">fn</font> <font color="#C00000">in</font> <font color="#000000">files</font><font color="#4000C0">:</font>
+                        <font color="#C00000">if</font> <font color="#000000">pattern</font> <font color="#C00000">in</font> <font color="#000000">fn</font><font color="#4000C0">:</font>
+                            <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">fn</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font>
+                    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"files"</font><font color="#4000C0">,</font> <font color="#000000">s</font><font color="#4000C0">)</font>
+                <font color="#C00000">else</font><font color="#4000C0">:</font>
+                    <font color="#000000">filelist</font> <font color="#4000C0">=</font> <font color="#008000">"ERROR: "</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">listdir</font><font color="#4000C0">(</font><font color="#008000">"."</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+        <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">CreateAnnotationObject</font><font color="#4000C0">(</font><font color="#008000">"Text2D"</font><font color="#4000C0">)</font>
+        <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">text</font> <font color="#4000C0">=</font> <font color="#000000">f</font>
+        <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">position</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.01</font><font color="#4000C0">,</font> <font color="#0080C0">0.91</font><font color="#4000C0">)</font>
+        <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">height</font> <font color="#4000C0">=</font> <font color="#0080C0">0.07</font>
+        <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+        <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+        <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"%s_%02d"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">test_name_base</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+        <font color="#C00000">if</font> <font color="#000000">usingWriteGroups</font><font color="#4000C0">:</font>
+            <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"%s_%02dfn"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">test_name_base</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#000000">filelist</font><font color="#4000C0">)</font>
+        <font color="#000000">count</font><font color="#4000C0">=</font><font color="#000000">count</font><font color="#4000C0">+</font><font color="#0080C0">1</font>
+
+        <font color="#a02030"># Clean up window 2</font>
+        <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#a02030">#if not usingWriteGroups:</font>
+        <font color="#a02030">#    CloseDatabase(pattern)</font>
+        <font color="#a02030">#else:</font>
+        <font color="#a02030">#    for db in opendbs:</font>
+        <font color="#a02030">#        CloseDatabase(db)</font>
+        <font color="#000000">DeleteWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#C00000">return</font> <font color="#000000">count</font>
+
+<font color="#C00000">def</font> <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Test export of some surfaces."</font><font color="#4000C0">)</font>
+    <font color="#000000">maindb</font> <font color="#4000C0">=</font> <font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">maindb</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"rad"</font><font color="#4000C0">,</font> <font color="#008000">"magnitude(coords(mesh1))"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">contourValue</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.55</font><font color="#4000C0">,</font> <font color="#0080C0">1.455</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">Value</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"rad"</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">iso</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.467474</font><font color="#4000C0">,</font> <font color="#0080C0">0.301847</font><font color="#4000C0">,</font> <font color="#0080C0">0.830877</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.140705</font><font color="#4000C0">,</font> <font color="#0080C0">0.953323</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.267166</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866025</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.0154649</font><font color="#4000C0">,</font> <font color="#0080C0">0.027457</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.14276</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScaleFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScales</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">shear</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowValid</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_1_00"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test VTK binary</font>
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"binary_VTK"</font>
+    <font color="#000000">opts</font> <font color="#4000C0">=</font> <font color="#000000">GetExportOptions</font><font color="#4000C0">(</font><font color="#008000">"VTK"</font><font color="#4000C0">)</font>
+    <font color="#a02030">#opts['Binary format'] = 1</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">line</font> <font color="#4000C0">=</font> <font color="#008000">"The binary_VTK.0.vtk file is NOT binary.\n\n"</font>
+    <font color="#000000">visitfile</font> <font color="#4000C0">=</font> <font color="#008000">" "</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">open</font><font color="#4000C0">(</font><font color="#008000">"binary_VTK.visit"</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">readlines</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#000000">VTK_check_binary</font><font color="#4000C0">(</font><font color="#008000">"binary_VTK/binary_VTK.0.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">line</font> <font color="#4000C0">=</font> <font color="#008000">"The binary_VTK.0.vtk file is binary.\n\n"</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">line</font> <font color="#4000C0">+</font> <font color="#000000">visitfile</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"export_db_1_01"</font><font color="#4000C0">,</font> <font color="#000000">s</font><font color="#4000C0">)</font>
+
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">GetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"binary_VTK.visit"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">CreateAnnotationObject</font><font color="#4000C0">(</font><font color="#008000">"Text2D"</font><font color="#4000C0">)</font>
+    <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">text</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+    <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">position</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.01</font><font color="#4000C0">,</font> <font color="#0080C0">0.91</font><font color="#4000C0">)</font>
+    <font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">height</font> <font color="#4000C0">=</font> <font color="#0080C0">0.07</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_1_02"</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase("binary_VTK.visit")</font>
+    <font color="#000000">DeleteWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test exporting some surfaces in other formats and plotting the results.</font>
+
+    <font color="#000000">count</font> <font color="#4000C0">=</font> <font color="#0080C0">3</font>
+    <font color="#000000">count</font> <font color="#4000C0">=</font> <font color="#000000">export_and_plot</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">v</font><font color="#4000C0">,</font> <font color="#000000">a</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">,</font> <font color="#C00000">False</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># change directory and retry the export_and_plot</font>
+    <font color="#000000">edir</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">TestEnv</font><font color="#4000C0">.</font><font color="#000000">params</font><font color="#4000C0">[</font><font color="#008000">"run_dir"</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#008000">"exports"</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#C00000">not</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isdir</font><font color="#4000C0">(</font><font color="#000000">edir</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">mkdir</font><font color="#4000C0">(</font><font color="#000000">edir</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">dirname</font><font color="#4000C0">=</font><font color="#000000">edir</font>
+
+    <font color="#000000">export_and_plot</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">v</font><font color="#4000C0">,</font> <font color="#000000">a</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">,</font> <font color="#C00000">False</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Clean up window 1</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase(maindb)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#000000">writeGroupSize</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Test export with write groups (parallel)."</font><font color="#4000C0">)</font>
+    <font color="#000000">maindb</font> <font color="#4000C0">=</font> <font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">maindb</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"rad"</font><font color="#4000C0">,</font> <font color="#008000">"magnitude(coords(mesh1))"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">contourValue</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.55</font><font color="#4000C0">,</font> <font color="#0080C0">1.455</font><font color="#4000C0">)</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">Value</font>
+    <font color="#000000">iso</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"rad"</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">iso</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.467474</font><font color="#4000C0">,</font> <font color="#0080C0">0.301847</font><font color="#4000C0">,</font> <font color="#0080C0">0.830877</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.140705</font><font color="#4000C0">,</font> <font color="#0080C0">0.953323</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.267166</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866025</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.0154649</font><font color="#4000C0">,</font> <font color="#0080C0">0.027457</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.14276</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScaleFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScales</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">shear</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowValid</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_2_00"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">GetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test exporting some surfaces in other formats and plotting the results.</font>
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">writeUsingGroups</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">groupSize</font> <font color="#4000C0">=</font> <font color="#000000">writeGroupSize</font>
+    <font color="#000000">count</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">count</font> <font color="#4000C0">=</font> <font color="#000000">export_and_plot</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">v</font><font color="#4000C0">,</font> <font color="#000000">a</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># change directory and retry the export_and_plot</font>
+    <font color="#000000">edir</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">TestEnv</font><font color="#4000C0">.</font><font color="#000000">params</font><font color="#4000C0">[</font><font color="#008000">"run_dir"</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#008000">"exports_2"</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#C00000">not</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isdir</font><font color="#4000C0">(</font><font color="#000000">edir</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">mkdir</font><font color="#4000C0">(</font><font color="#000000">edir</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">dirname</font><font color="#4000C0">=</font><font color="#000000">edir</font>
+
+    <font color="#000000">export_and_plot</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">v</font><font color="#4000C0">,</font> <font color="#000000">a</font><font color="#4000C0">,</font> <font color="#000000">count</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Clean up window 1</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase(maindb)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Test Tecplot multiblock export."</font><font color="#4000C0">)</font>
+    <font color="#000000">maindb</font> <font color="#4000C0">=</font> <font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">maindb</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"rad"</font><font color="#4000C0">,</font> <font color="#008000">"magnitude(coords(mesh))"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.467474</font><font color="#4000C0">,</font> <font color="#0080C0">0.301847</font><font color="#4000C0">,</font> <font color="#0080C0">0.830877</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.140705</font><font color="#4000C0">,</font> <font color="#0080C0">0.953323</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.267166</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.866025</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.0154649</font><font color="#4000C0">,</font> <font color="#0080C0">0.027457</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.14276</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScaleFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScales</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">shear</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowValid</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_3_00"</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">GetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"Tecplot"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type_fullname</font> <font color="#4000C0">=</font> <font color="#008000">"Tecplot_1.0"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"rectTecplot"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">writeUsingGroups</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">variables</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"default"</font><font color="#4000C0">,</font> <font color="#008000">"v"</font><font color="#4000C0">,</font> <font color="#008000">"rad"</font><font color="#4000C0">)</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Add the exported database in window 2</font>
+    <font color="#000000">AddWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"rectTecplot.tec"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_3_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_3_02"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"rad"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_3_03"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Make sure we have volume data</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"ThreeSlice"</font><font color="#4000C0">)</font>
+    <font color="#000000">atts</font> <font color="#4000C0">=</font> <font color="#000000">ThreeSliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">y</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+    <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+    <font color="#000000">atts</font><font color="#4000C0">.</font><font color="#000000">z</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">atts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_3_04"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Clean up window 2</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase("rectTecplot.tec")</font>
+    <font color="#000000">DeleteWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Back to window 1</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#    CloseDatabase(maindb)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test4</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Test VTK multiblock export."</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_4_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"multi_rect3d_LA"</font>
+    <font color="#000000">opts</font> <font color="#4000C0">=</font> <font color="#000000">GetExportOptions</font><font color="#4000C0">(</font><font color="#008000">"VTK"</font><font color="#4000C0">)</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy Ascii"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d_LA.visit"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_4_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"multi_rect3d_LB"</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy Binary"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d_LB.visit"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_4_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"multi_rect3d_XA"</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"XML Ascii"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d_XA.vtm"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_4_04"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"multi_rect3d_XB"</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"XML Binary"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"multi_rect3d_XB.vtm"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_4_05"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test_bov</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Test bov export with and without compression."</font><font color="#4000C0">)</font>
+    <font color="#000000">maindb</font> <font color="#4000C0">=</font> <font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">maindb</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># test w/o compression</font>
+    <font color="#a02030">#</font>
+    <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"BOV"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type_fullname</font> <font color="#4000C0">=</font> <font color="#008000">"BOV_1.0"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"test_bov_uncompressed"</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">variables</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"default"</font><font color="#4000C0">)</font>
+    <font color="#000000">opts</font> <font color="#4000C0">=</font> <font color="#000000">GetExportOptions</font><font color="#4000C0">(</font><font color="#008000">"BOV"</font><font color="#4000C0">)</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">"Compression"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"None"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"test_bov_uncompressed.bov exists"</font><font color="#4000C0">,</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#008000">"test_bov_uncompressed.bov"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"test_bov_uncompressed exists"</font><font color="#4000C0">,</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#008000">"test_bov_uncompressed"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"test_bov_uncompressed.bov"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_5_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># test w gzip compression</font>
+    <font color="#a02030">#</font>
+    <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"test_bov_gzip"</font>
+    <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">"Compression"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"gzip"</font>
+    <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+    <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.bov exists"</font><font color="#4000C0">,</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.bov"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.gz exists"</font><font color="#4000C0">,</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">isfile</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.gz"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+    <font color="#C00000">with</font> <font color="#000000">gzip</font><font color="#4000C0">.</font><font color="#000000">open</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.gz"</font><font color="#4000C0">,</font> <font color="#008000">"rb"</font><font color="#4000C0">)</font> <font color="#C00000">as</font> <font color="#000000">f_in</font><font color="#4000C0">:</font>
+        <font color="#C00000">with</font> <font color="#000000">open</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip"</font><font color="#4000C0">,</font> <font color="#008000">"wb"</font><font color="#4000C0">)</font> <font color="#C00000">as</font> <font color="#000000">f_out</font><font color="#4000C0">:</font>
+            <font color="#000000">shutil</font><font color="#4000C0">.</font><font color="#000000">copyfileobj</font><font color="#4000C0">(</font><font color="#000000">f_in</font><font color="#4000C0">,</font> <font color="#000000">f_out</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">ReplaceDatabase</font><font color="#4000C0">(</font><font color="#008000">"test_bov_gzip.bov"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"export_db_5_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">test_vtk_tetrahedralize</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">dbs_noext</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#008000">"ucd3d"</font><font color="#4000C0">,</font> <font color="#008000">"specmix_ucd"</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">db_noext</font> <font color="#C00000">in</font> <font color="#000000">dbs_noext</font><font color="#4000C0">:</font>
+        <font color="#000000">db</font> <font color="#4000C0">=</font> <font color="#008000">"%s.silo"</font><font color="#4000C0">%</font><font color="#000000">db_noext</font>
+        <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#000000">db</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+        <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"d"</font><font color="#4000C0">)</font> <font color="#a02030"># both dbs have variable 'd'</font>
+        <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"NumZones"</font><font color="#4000C0">)</font>
+        <font color="#000000">nzOrig</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+        <font color="#a02030"># Test VTK binary</font>
+        <font color="#000000">e</font> <font color="#4000C0">=</font> <font color="#000000">ExportDBAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">db_type</font> <font color="#4000C0">=</font> <font color="#008000">"VTK"</font>
+        <font color="#000000">e</font><font color="#4000C0">.</font><font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#008000">"%s_ascii_VTK_tets"</font><font color="#4000C0">%</font><font color="#000000">db_noext</font>
+        <font color="#000000">opts</font> <font color="#4000C0">=</font> <font color="#000000">GetExportOptions</font><font color="#4000C0">(</font><font color="#008000">"VTK"</font><font color="#4000C0">)</font>
+        <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'FileFormat'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy Ascii"</font>
+        <font color="#000000">opts</font><font color="#4000C0">[</font><font color="#008000">'Tetrahedralize'</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#C00000">True</font>
+        <font color="#000000">ExportDatabase</font><font color="#4000C0">(</font><font color="#000000">e</font><font color="#4000C0">,</font> <font color="#000000">opts</font><font color="#4000C0">)</font>
+        <font color="#000000">time</font><font color="#4000C0">.</font><font color="#000000">sleep</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+        <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030">#        CloseDatabase(silo_data_path(db))</font>
+        <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"%s_ascii_VTK_tets.vtk"</font><font color="#4000C0">%</font><font color="#000000">db_noext</font><font color="#4000C0">)</font>
+        <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"d"</font><font color="#4000C0">)</font>
+        <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"NumZones"</font><font color="#4000C0">)</font>
+        <font color="#000000">nzNew</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+        <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"export_db_vtk_tets_%s"</font><font color="#4000C0">%</font><font color="#000000">db_noext</font><font color="#4000C0">,</font> <font color="#008000">"Ratio of exported zone count to original is %d"</font><font color="#4000C0">%</font><font color="#4000C0">(</font><font color="#000000">nzNew</font><font color="#4000C0">/</font><font color="#000000">nzOrig</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+        <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">test0</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#C00000">if</font> <font color="#000000">GetEngineProperties</font><font color="#4000C0">(</font><font color="#000000">GetEngineList</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">numProcessors</font> <font color="#4000C0">&gt;</font> <font color="#0080C0">1</font><font color="#4000C0">:</font>
+        <font color="#a02030"># We just use 2 processors normally so let's set the write group size</font>
+        <font color="#a02030"># to 1 so each rank will write its own data using a different write</font>
+        <font color="#a02030"># group. For certain formats, there will be 1 data file per write</font>
+        <font color="#a02030"># group, or in this case 2 output files.</font>
+        <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">test4</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">test_bov</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">test_vtk_tetrahedralize</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>

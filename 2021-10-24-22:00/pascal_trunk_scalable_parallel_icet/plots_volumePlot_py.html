@@ -1,0 +1,420 @@
+<html><body bgcolor="#e0e0e0"><head><title>plots/volumePlot.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  volumePlot.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mesh      - 3D rectilinear, one domain</font>
+<font color="#a02030">#              plots     - volume </font>
+<font color="#a02030">#              operators - none</font>
+<font color="#a02030">#              selection - no </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Kathleen Bonnell </font>
+<font color="#a02030">#  Date:       March 4, 2005 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Kathleen Bonnell, Fri Oct 14 10:12:06 PDT 2005</font>
+<font color="#a02030">#    Added InitAnnotationsLegendOn and TestVolumeOpacity per '6670.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Fri May 26 10:11:52 PDT 2006</font>
+<font color="#a02030">#    Add test for extremely high aspect ratio meshes.  ['7250]</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Wed Mar 14 17:18:05 PST 2007</font>
+<font color="#a02030">#    Added tests for color control points and gaussian control points.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Thu Mar 12 09:17:57 PDT 2009</font>
+<font color="#a02030">#    I changed freeformFlag to opacityMode to reflect changes to the plot</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Sun Aug 29 16:07:56 PDT 2010</font>
+<font color="#a02030">#    Change Log10 to Log, to reflect change in naming.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Thu May 10 15:21:51 PDT 2018</font>
+<font color="#a02030">#    Add test case for sampling types.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Alister Maguire, Tue Feb  5 14:17:13 PST 2019</font>
+<font color="#a02030">#    Updated the aspect test to use a larger multiplier and no shading for </font>
+<font color="#a02030">#    better visibility. Updated the scaling test to not use shading (again</font>
+<font color="#a02030">#    for better visibility).  </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Alister Maguire, Mon Mar 25 11:19:54 PDT 2019</font>
+<font color="#a02030">#    Added an opacity test that changes the opacity variable. </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Alister Maguire, Wed Jun  5 11:01:31 PDT 2019</font>
+<font color="#a02030">#    Added opacity attenuation test. </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Alister Maguire, Fri Mar 20 15:36:37 PDT 2020</font>
+<font color="#a02030">#    Added gradient lighting reduction test.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">def</font> <font color="#000000">InitAnnotations</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># Turn off all annotation</font>
+    <font color="#000000">TurnOffAllAnnotations</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">InitAnnotationsLegendOn</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># Turn off all annotation</font>
+    <font color="#000000">a</font> <font color="#4000C0">=</font> <font color="#000000">AnnotationAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">TurnOffAllAnnotations</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+    <font color="#000000">a</font><font color="#4000C0">.</font><font color="#000000">legendInfoFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetAnnotationAttributes</font><font color="#4000C0">(</font><font color="#000000">a</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeScaling</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Log</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Skew</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0001</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">1000</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_04"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Linear</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_05"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Log</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_06"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Skew</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0001</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_07"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">1000</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_08"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">rendererType</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">RayCasting</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Linear</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_09"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Log</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_10"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">scaling</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">Skew</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0001</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_11"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">skewFactor</font> <font color="#4000C0">=</font> <font color="#0080C0">1000</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeScaling_12"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeOpacity</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># default opacity</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeOpacity_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># setting opacity via individual index and value</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">150</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">SetFreeformOpacity</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeOpacity_02"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># setting opacity via creation of a tuple</font>
+    <font color="#000000">opac1</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">8</font><font color="#4000C0">,</font> <font color="#0080C0">16</font><font color="#4000C0">,</font> <font color="#0080C0">24</font><font color="#4000C0">,</font> <font color="#0080C0">32</font><font color="#4000C0">,</font> <font color="#0080C0">40</font><font color="#4000C0">,</font> <font color="#0080C0">48</font><font color="#4000C0">,</font> <font color="#0080C0">56</font><font color="#4000C0">,</font> <font color="#0080C0">64</font><font color="#4000C0">,</font> <font color="#0080C0">72</font><font color="#4000C0">,</font> <font color="#0080C0">80</font><font color="#4000C0">,</font> <font color="#0080C0">88</font><font color="#4000C0">,</font> <font color="#0080C0">96</font><font color="#4000C0">,</font> <font color="#0080C0">104</font><font color="#4000C0">,</font> <font color="#0080C0">112</font><font color="#4000C0">,</font> <font color="#0080C0">120</font><font color="#4000C0">,</font> <font color="#0080C0">128</font><font color="#4000C0">,</font> <font color="#0080C0">136</font><font color="#4000C0">,</font> <font color="#0080C0">144</font><font color="#4000C0">,</font> <font color="#0080C0">152</font><font color="#4000C0">,</font> <font color="#0080C0">160</font><font color="#4000C0">,</font> <font color="#0080C0">168</font><font color="#4000C0">,</font> <font color="#0080C0">176</font><font color="#4000C0">,</font> <font color="#0080C0">184</font><font color="#4000C0">,</font> <font color="#0080C0">192</font><font color="#4000C0">,</font> <font color="#0080C0">200</font><font color="#4000C0">,</font> <font color="#0080C0">208</font><font color="#4000C0">,</font> <font color="#0080C0">216</font><font color="#4000C0">,</font> <font color="#0080C0">224</font><font color="#4000C0">,</font> <font color="#0080C0">232</font><font color="#4000C0">,</font> <font color="#0080C0">240</font><font color="#4000C0">,</font> <font color="#0080C0">248</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">248</font><font color="#4000C0">,</font> <font color="#0080C0">240</font><font color="#4000C0">,</font> <font color="#0080C0">232</font><font color="#4000C0">,</font> <font color="#0080C0">224</font><font color="#4000C0">,</font> <font color="#0080C0">216</font><font color="#4000C0">,</font> <font color="#0080C0">208</font><font color="#4000C0">,</font> <font color="#0080C0">200</font><font color="#4000C0">,</font> <font color="#0080C0">192</font><font color="#4000C0">,</font> <font color="#0080C0">184</font><font color="#4000C0">,</font> <font color="#0080C0">176</font><font color="#4000C0">,</font> <font color="#0080C0">168</font><font color="#4000C0">,</font> <font color="#0080C0">160</font><font color="#4000C0">,</font> <font color="#0080C0">152</font><font color="#4000C0">,</font> <font color="#0080C0">144</font><font color="#4000C0">,</font> <font color="#0080C0">136</font><font color="#4000C0">,</font> <font color="#0080C0">128</font><font color="#4000C0">,</font> <font color="#0080C0">120</font><font color="#4000C0">,</font> <font color="#0080C0">112</font><font color="#4000C0">,</font> <font color="#0080C0">104</font><font color="#4000C0">,</font> <font color="#0080C0">96</font><font color="#4000C0">,</font> <font color="#0080C0">88</font><font color="#4000C0">,</font> <font color="#0080C0">80</font><font color="#4000C0">,</font> <font color="#0080C0">72</font><font color="#4000C0">,</font> <font color="#0080C0">64</font><font color="#4000C0">,</font> <font color="#0080C0">56</font><font color="#4000C0">,</font> <font color="#0080C0">48</font><font color="#4000C0">,</font> <font color="#0080C0">40</font><font color="#4000C0">,</font> <font color="#0080C0">32</font><font color="#4000C0">,</font> <font color="#0080C0">24</font><font color="#4000C0">,</font> <font color="#0080C0">16</font><font color="#4000C0">,</font> <font color="#0080C0">8</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">8</font><font color="#4000C0">,</font> <font color="#0080C0">16</font><font color="#4000C0">,</font> <font color="#0080C0">24</font><font color="#4000C0">,</font> <font color="#0080C0">32</font><font color="#4000C0">,</font> <font color="#0080C0">40</font><font color="#4000C0">,</font> <font color="#0080C0">48</font><font color="#4000C0">,</font> <font color="#0080C0">56</font><font color="#4000C0">,</font> <font color="#0080C0">64</font><font color="#4000C0">,</font> <font color="#0080C0">72</font><font color="#4000C0">,</font> <font color="#0080C0">80</font><font color="#4000C0">,</font> <font color="#0080C0">88</font><font color="#4000C0">,</font> <font color="#0080C0">96</font><font color="#4000C0">,</font> <font color="#0080C0">104</font><font color="#4000C0">,</font> <font color="#0080C0">112</font><font color="#4000C0">,</font> <font color="#0080C0">120</font><font color="#4000C0">,</font> <font color="#0080C0">128</font><font color="#4000C0">,</font> <font color="#0080C0">136</font><font color="#4000C0">,</font> <font color="#0080C0">144</font><font color="#4000C0">,</font> <font color="#0080C0">152</font><font color="#4000C0">,</font> <font color="#0080C0">160</font><font color="#4000C0">,</font> <font color="#0080C0">168</font><font color="#4000C0">,</font> <font color="#0080C0">176</font><font color="#4000C0">,</font> <font color="#0080C0">184</font><font color="#4000C0">,</font> <font color="#0080C0">192</font><font color="#4000C0">,</font> <font color="#0080C0">200</font><font color="#4000C0">,</font> <font color="#0080C0">208</font><font color="#4000C0">,</font> <font color="#0080C0">216</font><font color="#4000C0">,</font> <font color="#0080C0">224</font><font color="#4000C0">,</font> <font color="#0080C0">232</font><font color="#4000C0">,</font> <font color="#0080C0">240</font><font color="#4000C0">,</font> <font color="#0080C0">248</font><font color="#4000C0">,</font> <font color="#0080C0">255</font><font color="#4000C0">,</font> <font color="#0080C0">248</font><font color="#4000C0">,</font> <font color="#0080C0">240</font><font color="#4000C0">,</font> <font color="#0080C0">232</font><font color="#4000C0">,</font> <font color="#0080C0">224</font><font color="#4000C0">,</font> <font color="#0080C0">216</font><font color="#4000C0">,</font> <font color="#0080C0">208</font><font color="#4000C0">,</font> <font color="#0080C0">200</font><font color="#4000C0">,</font> <font color="#0080C0">192</font><font color="#4000C0">,</font> <font color="#0080C0">184</font><font color="#4000C0">,</font> <font color="#0080C0">176</font><font color="#4000C0">,</font> <font color="#0080C0">168</font><font color="#4000C0">,</font> <font color="#0080C0">160</font><font color="#4000C0">,</font> <font color="#0080C0">152</font><font color="#4000C0">,</font> <font color="#0080C0">144</font><font color="#4000C0">,</font> <font color="#0080C0">136</font><font color="#4000C0">,</font> <font color="#0080C0">128</font><font color="#4000C0">,</font> <font color="#0080C0">120</font><font color="#4000C0">,</font> <font color="#0080C0">112</font><font color="#4000C0">,</font> <font color="#0080C0">104</font><font color="#4000C0">,</font> <font color="#0080C0">96</font><font color="#4000C0">,</font> <font color="#0080C0">88</font><font color="#4000C0">,</font> <font color="#0080C0">80</font><font color="#4000C0">,</font> <font color="#0080C0">72</font><font color="#4000C0">,</font> <font color="#0080C0">64</font><font color="#4000C0">,</font> <font color="#0080C0">56</font><font color="#4000C0">,</font> <font color="#0080C0">48</font><font color="#4000C0">,</font> <font color="#0080C0">40</font><font color="#4000C0">,</font> <font color="#0080C0">32</font><font color="#4000C0">,</font> <font color="#0080C0">24</font><font color="#4000C0">,</font> <font color="#0080C0">16</font><font color="#4000C0">,</font> <font color="#0080C0">8</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">SetFreeformOpacity</font><font color="#4000C0">(</font><font color="#4000C0">*</font><font color="#000000">opac1</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeOpacity_03"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># setting opacity via creation of a list</font>
+    <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">32</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#000000">opac2</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">j</font><font color="#4000C0">*</font><font color="#0080C0">8</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">32</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#000000">opac2</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#0080C0">255</font><font color="#4000C0">-</font><font color="#4000C0">(</font><font color="#000000">j</font><font color="#4000C0">*</font><font color="#0080C0">8</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">128</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#000000">opac2</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">32</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#000000">opac2</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">j</font><font color="#4000C0">*</font><font color="#0080C0">8</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">32</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">opac2</font> <font color="#4000C0">=</font> <font color="#000000">opac2</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#0080C0">255</font><font color="#4000C0">-</font><font color="#4000C0">(</font><font color="#000000">j</font><font color="#4000C0">*</font><font color="#0080C0">8</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">SetFreeformOpacity</font><font color="#4000C0">(</font><font color="#000000">opac2</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeOpacity_04"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Make sure we can change out opacity variable. </font>
+    <font color="#a02030">#</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"dz"</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">opacityVariable</font> <font color="#4000C0">=</font> <font color="#008000">"v"</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeOpacity_05"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">TestOpacityAttenuation</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># First, test the ray caster without reduced attenuation. </font>
+    <font color="#a02030">#</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">opacityAttenuation</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">rendererType</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">RayCasting</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"opacityAttenuation_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Now reduce attenutation. </font>
+    <font color="#a02030">#</font>
+    <font color="#000000">volAtts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">rendererType</font> <font color="#4000C0">=</font> <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">RayCasting</font>
+    <font color="#000000">volAtts</font><font color="#4000C0">.</font><font color="#000000">opacityAttenuation</font> <font color="#4000C0">=</font> <font color="#0080C0">.12</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">volAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"opacityAttenuation_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeAspect</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">orig_atts</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">new_atts</font>  <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">new_atts</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">new_atts</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DefineVectorExpression</font><font color="#4000C0">(</font><font color="#008000">"disp"</font><font color="#4000C0">,</font> <font color="#008000">"{0,0,-0.9*coord(Mesh)[2]}"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Displace"</font><font color="#4000C0">)</font>
+    <font color="#000000">d</font> <font color="#4000C0">=</font> <font color="#000000">DisplaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"disp"</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.324974</font><font color="#4000C0">,</font> <font color="#0080C0">0.839345</font><font color="#4000C0">,</font> <font color="#0080C0">0.435765</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeAspect_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">orig_atts</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Modify colors. The default color table has 5 control points. Delete</font>
+    <font color="#a02030"># all but 2 of them and then change their colors.</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">RemoveControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">4</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">RemoveControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">3</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">RemoveControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">GetControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">colors</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">GetControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">position</font> <font color="#4000C0">=</font> <font color="#0080C0">0.</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">GetControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">colors</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorControlPoints</font><font color="#4000C0">.</font><font color="#000000">GetControlPoints</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">position</font> <font color="#4000C0">=</font> <font color="#0080C0">1.</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeColors_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Start over with the colors.</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">ClearControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">tmp</font> <font color="#4000C0">=</font> <font color="#000000">ColorControlPoint</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">npts</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">npts</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#0080C0">0.</font>
+        <font color="#C00000">if</font> <font color="#000000">i</font> <font color="#4000C0">&lt;</font> <font color="#000000">npts</font><font color="#4000C0">/</font><font color="#0080C0">2</font><font color="#4000C0">:</font>
+            <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">npts</font><font color="#4000C0">/</font><font color="#0080C0">2</font> <font color="#4000C0">-</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+            <font color="#000000">r</font> <font color="#4000C0">=</font> <font color="#0080C0">255</font>
+            <font color="#000000">g</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#0080C0">255.</font><font color="#4000C0">)</font>
+            <font color="#000000">b</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+        <font color="#C00000">else</font><font color="#4000C0">:</font>
+            <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#0080C0">1.</font> <font color="#4000C0">-</font> <font color="#4000C0">(</font><font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">-</font><font color="#4000C0">(</font><font color="#000000">npts</font><font color="#4000C0">/</font><font color="#0080C0">2</font><font color="#4000C0">)</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">npts</font><font color="#4000C0">/</font><font color="#0080C0">2</font> <font color="#4000C0">-</font> <font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+            <font color="#000000">r</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">-</font><font color="#000000">t</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#0080C0">255.</font><font color="#4000C0">)</font>
+            <font color="#000000">g</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">-</font><font color="#000000">t</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#0080C0">255.</font><font color="#4000C0">)</font>
+            <font color="#000000">b</font> <font color="#4000C0">=</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#0080C0">255.</font><font color="#4000C0">)</font>
+        <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">colors</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#000000">r</font><font color="#4000C0">,</font><font color="#000000">g</font><font color="#4000C0">,</font><font color="#000000">b</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">)</font>
+        <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">position</font> <font color="#4000C0">=</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">npts</font><font color="#4000C0">-</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+        <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">AddControlPoints</font><font color="#4000C0">(</font><font color="#000000">tmp</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeColors_02"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeGaussianControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">opacityMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GaussianMode</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">opacityControlPoints</font><font color="#4000C0">.</font><font color="#000000">ClearControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">tmp</font> <font color="#4000C0">=</font> <font color="#000000">GaussianControlPoint</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Design gaussians</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#0080C0">0.818182</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">height</font> <font color="#4000C0">=</font> <font color="#0080C0">0.787879</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">width</font> <font color="#4000C0">=</font> <font color="#0080C0">0.147059</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">xBias</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">yBias</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetOpacityControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">AddControlPoints</font><font color="#4000C0">(</font><font color="#000000">tmp</font><font color="#4000C0">)</font>
+
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#0080C0">0.203209</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">height</font> <font color="#4000C0">=</font> <font color="#0080C0">0.590909</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">width</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0588235</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">xBias</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0026738</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">yBias</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetOpacityControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">AddControlPoints</font><font color="#4000C0">(</font><font color="#000000">tmp</font><font color="#4000C0">)</font>
+
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#0080C0">0.47861</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">height</font> <font color="#4000C0">=</font> <font color="#0080C0">0.19697</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">width</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0721925</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">xBias</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">0.00802138</font>
+    <font color="#000000">tmp</font><font color="#4000C0">.</font><font color="#000000">yBias</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetOpacityControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">AddControlPoints</font><font color="#4000C0">(</font><font color="#000000">tmp</font><font color="#4000C0">)</font>
+
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeGaussian_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVolumeSampling</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"noise.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rendererType</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">RayCasting</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">sampling</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">KernelBased</font>
+    <font color="#000000">ct</font> <font color="#4000C0">=</font> <font color="#000000">GetColorTable</font><font color="#4000C0">(</font><font color="#008000">"hot_desaturated"</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">ClearControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">ct</font><font color="#4000C0">.</font><font color="#000000">GetNumControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">GetColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">AddControlPoints</font><font color="#4000C0">(</font><font color="#000000">ct</font><font color="#4000C0">.</font><font color="#000000">GetControlPoints</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">view</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">17.3205</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">34.641</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">34.641</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0720459</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.00108509</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.85429</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">axis3DScaleFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">axis3DScales</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">shear</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">windowValid</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">view</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeSampling_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">sampling</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Rasterization</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeSampling_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">sampling</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Trilinear</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"volumeSampling_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">TestGradientLightingReduction</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+    <font color="#000000">view</font> <font color="#4000C0">=</font> <font color="#000000">GetView3D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">view</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.746662961825451</font><font color="#4000C0">,</font> <font color="#0080C0">0.1647201021100829</font><font color="#4000C0">,</font> <font color="#0080C0">0.6444856161303283</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">view</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Volume"</font><font color="#4000C0">,</font> <font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Trilinear ray casting used to have very harsh results with</font>
+    <font color="#a02030"># gradient lighting reduction. Let's make sure they're better</font>
+    <font color="#a02030"># now.</font>
+    <font color="#a02030">#</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">lightingFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">rendererType</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">RayCasting</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">sampling</font>     <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Trilinear</font>
+
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">lowGradientLightingReduction</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Lower</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"graidentLighting_00"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">lowGradientLightingReduction</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Medium</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"graidentLighting_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">lowGradientLightingReduction</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">Higher</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"graidentLighting_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#FIXME: For some reason, if you render using the ray caster, </font>
+<font color="#a02030">#       attempting to render using the default renderer afterwards</font>
+<font color="#a02030">#       will result in a blank test result. I have not been able</font>
+<font color="#a02030">#       to reproduce this outside of the test suite. I created </font>
+<font color="#a02030">#       issue #3608 to track this. </font>
+
+<font color="#000000">InitAnnotationsLegendOn</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeColorControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeGaussianControlPoints</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeAspect</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeOpacity</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">InitAnnotations</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeScaling</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVolumeSampling</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestOpacityAttenuation</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestGradientLightingReduction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
