@@ -1,0 +1,99 @@
+<html><body bgcolor="#e0e0e0"><head><title>quickrecipes/opening_compute_engine.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Fri Aug 26 14:31:48 PDT 2022</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Get some utils shared across many .py files used for quick recipes.</font>
+<font color="#a02030">#</font>
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">'quickrecipes'</font><font color="#4000C0">,</font><font color="#008000">'vqr_utils.py.inc'</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">opening_a_compute_engine1</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># opening a compute engine 1 {</font>
+    <font color="#a02030"># Open a local, parallel compute engine before opening a database</font>
+    <font color="#a02030"># Use 4 processors on 2 nodes</font>
+    <font color="#000000">OpenComputeEngine</font><font color="#4000C0">(</font><font color="#008000">"localhost"</font><font color="#4000C0">,</font> <font color="#4000C0">(</font><font color="#008000">"-np"</font><font color="#4000C0">,</font> <font color="#008000">"4"</font><font color="#4000C0">,</font> <font color="#008000">"-nn"</font><font color="#4000C0">,</font> <font color="#008000">"2"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/multi_ucd3d.silo"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># opening a compute engine 1 }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 1 error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 1 exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 1 exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+  <font color="#000000">CloseComputeEngine</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">opening_a_compute_engine2</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># opening a compute engine 2 {</font>
+    <font color="#a02030"># Use the "srun" job launcher, the "batch" partition, the "mybank" bank,</font>
+    <font color="#a02030"># 72 processors on 2 nodes and a time limit of 1 hour</font>
+    <font color="#000000">OpenComputeEngine</font><font color="#4000C0">(</font><font color="#008000">"localhost"</font><font color="#4000C0">,</font>
+        <font color="#4000C0">(</font><font color="#008000">"-l"</font><font color="#4000C0">,</font> <font color="#008000">"srun"</font><font color="#4000C0">,</font> <font color="#008000">"-p"</font><font color="#4000C0">,</font> <font color="#008000">"batch"</font><font color="#4000C0">,</font> <font color="#008000">"-b"</font><font color="#4000C0">,</font> <font color="#008000">"mybank"</font><font color="#4000C0">,</font>
+         <font color="#008000">"-np"</font><font color="#4000C0">,</font> <font color="#008000">"72"</font><font color="#4000C0">,</font> <font color="#008000">"-nn"</font><font color="#4000C0">,</font> <font color="#008000">"2"</font><font color="#4000C0">,</font> <font color="#008000">"-t"</font><font color="#4000C0">,</font> <font color="#008000">"1:00:00"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#a02030"># opening a compute engine 2 }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'opening a compute 2 engine error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 2 exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 2 exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">CloseComputeEngine</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">make_machine_profile_for_localhost</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+    <font color="#a02030"># Start an empty machine profile</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">MachineProfile</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">host</font> <font color="#4000C0">=</font> <font color="#000000">GetLocalHostName</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">hostNickname</font> <font color="#4000C0">=</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">host</font>
+
+    <font color="#a02030"># Create serial launch profile</font>
+    <font color="#000000">ls</font> <font color="#4000C0">=</font> <font color="#000000">LaunchProfile</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ls</font><font color="#4000C0">.</font><font color="#000000">profileName</font> <font color="#4000C0">=</font> <font color="#008000">"serial"</font>
+
+    <font color="#a02030"># Create parallel launch profile</font>
+    <font color="#000000">lp</font> <font color="#4000C0">=</font> <font color="#000000">LaunchProfile</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">lp</font><font color="#4000C0">.</font><font color="#000000">profileName</font> <font color="#4000C0">=</font> <font color="#008000">"parallel"</font>
+    <font color="#000000">lp</font><font color="#4000C0">.</font><font color="#000000">numProcessors</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">lp</font><font color="#4000C0">.</font><font color="#000000">parallel</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+
+    <font color="#a02030"># Add the launch profiles</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">AddLaunchProfiles</font><font color="#4000C0">(</font><font color="#000000">ls</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">AddLaunchProfiles</font><font color="#4000C0">(</font><font color="#000000">lp</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Now let VisIt know about this profile</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">activeProfile</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font> <font color="#a02030"># default serial launch</font>
+    <font color="#000000">AddMachineProfile</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">opening_a_compute_engine3</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># opening a compute engine 3 {</font>
+    <font color="#a02030"># Set the user name to "user1" and use the 2nd profile,</font>
+    <font color="#a02030"># (indexed by 1 from zero) overriding a few of its properties</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">GetMachineProfile</font><font color="#4000C0">(</font><font color="#008000">"quartz.llnl.gov"</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">userName</font><font color="#4000C0">=</font><font color="#008000">"user1"</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">activeProfile</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">GetLaunchProfiles</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">numProcessors</font> <font color="#4000C0">=</font> <font color="#0080C0">6</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">GetLaunchProfiles</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">numNodes</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">GetLaunchProfiles</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">timeLimit</font> <font color="#4000C0">=</font> <font color="#008000">"00:30:00"</font>
+    <font color="#000000">OpenComputeEngine</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#a02030"># opening a compute engine 3 }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 3 error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 3 exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'opening a compute engine 3 exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">CloseComputeEngine</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">CloseComputeEngine</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">make_machine_profile_for_localhost</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">opening_a_compute_engine1</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">opening_a_compute_engine2</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">opening_a_compute_engine3</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
