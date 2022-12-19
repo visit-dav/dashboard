@@ -1,0 +1,232 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/mfem.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#  LIMIT: 900</font>
+<font color="#a02030">#  Test Case:  mfem.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      mfem files </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Cyrus Harrison</font>
+<font color="#a02030">#  Date:       Thu Jun 12 14:58:03 PDT 2014</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Brad Whitlock, Wed Sep  2 20:56:13 PDT 2020</font>
+<font color="#a02030">#    The MFEM reader now provides original cells so artificial mesh lines</font>
+<font color="#a02030">#    get removed. There's less of a point to seeing them here. Keep min/max</font>
+<font color="#a02030">#    refinement levels only. </font>
+<font color="#a02030"># </font>
+<font color="#a02030">#    Justin Privitera, Mon Oct 17 17:33:30 PDT 2022</font>
+<font color="#a02030">#    Added new tests for the new LOR settings. All prior tests use the legacy</font>
+<font color="#a02030">#    LOR setting, while new tests use a mix of both.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#000000">RequiredDatabasePlugin</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+
+<font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+<font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy LOR"</font>
+<font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+
+<font color="#000000">mfem_roots</font>  <font color="#4000C0">=</font> <font color="#000000">glob</font><font color="#4000C0">.</font><font color="#000000">glob</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mfem_test_data/*.mfem_root"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#000000">input_meshs</font>  <font color="#4000C0">=</font> <font color="#4000C0">[</font> <font color="#000000">f</font> <font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">mfem_roots</font> <font color="#C00000">if</font> <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">count</font><font color="#4000C0">(</font><font color="#008000">"ex0"</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">]</font>
+<font color="#000000">ex01_results</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font> <font color="#000000">f</font> <font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">mfem_roots</font> <font color="#C00000">if</font> <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">count</font><font color="#4000C0">(</font><font color="#008000">"ex01"</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">1</font><font color="#4000C0">]</font>
+<font color="#000000">ex02_results</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font> <font color="#000000">f</font> <font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">mfem_roots</font> <font color="#C00000">if</font> <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">count</font><font color="#4000C0">(</font><font color="#008000">"ex02"</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">1</font><font color="#4000C0">]</font>
+
+<font color="#C00000">def</font> <font color="#000000">set_test_view</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.510614</font><font color="#4000C0">,</font> <font color="#0080C0">0.302695</font><font color="#4000C0">,</font> <font color="#0080C0">0.804767</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.0150532</font><font color="#4000C0">,</font> <font color="#0080C0">0.932691</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.360361</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">17.3205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">34.641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">34.641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScaleFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">axis3DScales</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">shear</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">windowValid</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Input Mesh Files"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">input_meshs</font><font color="#4000C0">:</font>
+    <font color="#000000">base</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">splitext</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">basename</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"element_coloring"</font><font color="#4000C0">)</font>
+    <font color="#a02030">#pc_atts = PseudocolorAttributes()</font>
+    <font color="#a02030">#pc_atts.colorTableName = "PuBuGn"</font>
+    <font color="#a02030">#SetPlotOptions(pc_atts)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"MultiresControl"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"main"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"MultiresControl"</font><font color="#4000C0">)</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">levels</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">20</font><font color="#4000C0">]</font>
+    <font color="#C00000">if</font> <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">count</font><font color="#4000C0">(</font><font color="#008000">"amr"</font><font color="#4000C0">)</font> <font color="#4000C0">&gt;</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+        <font color="#000000">levels</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">5</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">mres</font> <font color="#C00000">in</font> <font color="#000000">levels</font><font color="#4000C0">:</font>
+        <font color="#000000">mc_atts</font>  <font color="#4000C0">=</font> <font color="#000000">MultiresControlAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">mc_atts</font><font color="#4000C0">.</font><font color="#000000">resolution</font> <font color="#4000C0">=</font> <font color="#000000">mres</font>
+        <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">mc_atts</font><font color="#4000C0">)</font>
+        <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"input_mesh_%s_mres_%04d"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">base</font><font color="#4000C0">,</font><font color="#000000">mres</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"ex01 results"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">ex01_results</font><font color="#4000C0">:</font>
+    <font color="#000000">base</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">splitext</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">basename</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"gf"</font><font color="#4000C0">)</font>
+    <font color="#a02030">#AddPlot("Mesh","main")</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ex01_%s"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">base</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"ex02 results"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">f</font> <font color="#C00000">in</font> <font color="#000000">ex02_results</font><font color="#4000C0">:</font>
+    <font color="#000000">base</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">splitext</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">basename</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"element_attribute"</font><font color="#4000C0">)</font>
+    <font color="#a02030">#AddPlot("Mesh","main")</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ex02_element_attribute_%s"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">base</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"gf_magnitude"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"ex02_gf_mag_%s"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">base</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"MFEM Expressions"</font><font color="#4000C0">)</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mfem_test_data/ex02-beam-tet.mfem_root"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"mag-gf"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mfem_expressions_1"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"comp0"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mfem_expressions_2"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font><font color="#008000">"curl-gf"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"mfem_expressions_3"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"mfem_test_data/ex02-beam-tet.mfem_root"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># reset default</font>
+<font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+<font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"MFEM LOR"</font>
+<font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test_mfem_lor_mesh</font><font color="#4000C0">(</font><font color="#000000">tag_name</font><font color="#4000C0">,</font> <font color="#000000">dbfile</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">base</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">splitext</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">basename</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+
+    <font color="#a02030"># get default options</font>
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"MFEM LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># we want to test a picture of a wireframe</font>
+    <font color="#a02030"># new LOR should only have the outer edge</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"main"</font><font color="#4000C0">)</font>
+    <font color="#000000">SubsetAtts</font> <font color="#4000C0">=</font> <font color="#000000">SubsetAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SubsetAtts</font><font color="#4000C0">.</font><font color="#000000">wireframe</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">SubsetAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">set_test_view</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#000000">tag_name</font> <font color="#4000C0">+</font> <font color="#008000">"_"</font> <font color="#4000C0">+</font> <font color="#000000">base</font> <font color="#4000C0">+</font> <font color="#008000">"_lor"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">##############################</font>
+
+    <font color="#a02030"># examine legacy</font>
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># old LOR leaves a busy wireframe</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"main"</font><font color="#4000C0">)</font>
+    <font color="#000000">SubsetAtts</font> <font color="#4000C0">=</font> <font color="#000000">SubsetAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">SubsetAtts</font><font color="#4000C0">.</font><font color="#000000">wireframe</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">SubsetAtts</font><font color="#4000C0">)</font>
+    <font color="#000000">set_test_view</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#000000">tag_name</font> <font color="#4000C0">+</font> <font color="#008000">"_"</font> <font color="#4000C0">+</font> <font color="#000000">base</font> <font color="#4000C0">+</font> <font color="#008000">"_legacy_lor"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># restore default</font>
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"MFEM LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Legacy and New LOR"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">dbfile</font> <font color="#C00000">in</font> <font color="#000000">input_meshs</font><font color="#4000C0">:</font>
+    <font color="#000000">test_mfem_lor_mesh</font><font color="#4000C0">(</font><font color="#008000">"LOR"</font><font color="#4000C0">,</font> <font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">test_mfem_lor_field</font><font color="#4000C0">(</font><font color="#000000">tag_name</font><font color="#4000C0">,</font> <font color="#000000">dbfile</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">base</font> <font color="#4000C0">=</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">splitext</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">basename</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"MFEM LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"gf"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"MultiresControl"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">MultiresControlAtts</font> <font color="#4000C0">=</font> <font color="#000000">MultiresControlAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">MultiresControlAtts</font><font color="#4000C0">.</font><font color="#000000">resolution</font> <font color="#4000C0">=</font> <font color="#0080C0">3</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">MultiresControlAtts</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">set_test_view</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#000000">tag_name</font> <font color="#4000C0">+</font> <font color="#008000">"_"</font> <font color="#4000C0">+</font> <font color="#000000">base</font> <font color="#4000C0">+</font> <font color="#008000">"_pseudocolor_gf_lor"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">##############################</font>
+
+    <font color="#a02030"># examine legacy</font>
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"Legacy LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"gf"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"MultiresControl"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">MultiresControlAtts</font> <font color="#4000C0">=</font> <font color="#000000">MultiresControlAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">MultiresControlAtts</font><font color="#4000C0">.</font><font color="#000000">resolution</font> <font color="#4000C0">=</font> <font color="#0080C0">3</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">MultiresControlAtts</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">set_test_view</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#000000">tag_name</font> <font color="#4000C0">+</font> <font color="#008000">"_"</font> <font color="#4000C0">+</font> <font color="#000000">base</font> <font color="#4000C0">+</font> <font color="#008000">"_pseudocolor_gf_legacy_lor"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># restore default</font>
+    <font color="#000000">readOptions</font> <font color="#4000C0">=</font> <font color="#000000">GetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">)</font>
+    <font color="#000000">readOptions</font><font color="#4000C0">[</font><font color="#008000">"MFEM LOR Setting"</font><font color="#4000C0">]</font> <font color="#4000C0">=</font> <font color="#008000">"MFEM LOR"</font>
+    <font color="#000000">SetDefaultFileOpenOptions</font><font color="#4000C0">(</font><font color="#008000">"MFEM"</font><font color="#4000C0">,</font> <font color="#000000">readOptions</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Legacy and New LOR Fields"</font><font color="#4000C0">)</font>
+<font color="#C00000">for</font> <font color="#000000">dbfile</font> <font color="#C00000">in</font> <font color="#000000">ex01_results</font><font color="#4000C0">:</font>
+    <font color="#000000">test_mfem_lor_field</font><font color="#4000C0">(</font><font color="#008000">"LOR_Fields"</font><font color="#4000C0">,</font> <font color="#000000">dbfile</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>

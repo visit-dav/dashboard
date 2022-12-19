@@ -1,0 +1,192 @@
+<html><body bgcolor="#e0e0e0"><head><title>quickrecipes/quantitative_operations.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Fri Aug 26 14:31:48 PDT 2022</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Get some utils shared across many .py files used for quick recipes.</font>
+<font color="#a02030">#</font>
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">'quickrecipes'</font><font color="#4000C0">,</font><font color="#008000">'vqr_utils.py.inc'</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">defining_expressions</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># defining expressions {</font>
+    <font color="#a02030"># Creating a new expression</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"newvar"</font><font color="#4000C0">,</font> <font color="#008000">"sin(hardyglobal) + cos(shepardglobal)"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"newvar"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># defining expressions }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'defining expressions error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'defining expressions exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'defining expressions exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">pick</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># pick {</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hgslice"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Pick by a node id</font>
+    <font color="#000000">PickByNode</font><font color="#4000C0">(</font><font color="#0080C0">300</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">GetPickOutput</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Pick by a cell id</font>
+    <font color="#000000">PickByZone</font><font color="#4000C0">(</font><font color="#0080C0">250</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">GetPickOutput</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Pick on a cell using a 3d point</font>
+    <font color="#000000">Pick</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">2.</font><font color="#4000C0">,</font> <font color="#0080C0">2.</font><font color="#4000C0">,</font> <font color="#0080C0">0.</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">GetPickOutput</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Pick on the node closest to (-2,2,0)</font>
+    <font color="#000000">NodePick</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">2</font><font color="#4000C0">,</font><font color="#0080C0">2</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">GetPickOutput</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Print all pick results</font>
+    <font color="#000000">print</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Will produce output somewhat like...</font>
+    <font color="#a02030"># ['\nA:  noise.silo\nMesh2D \nPoint: &lt;-10, -7.55102&gt;\nNode:...</font>
+    <font color="#a02030">#  '\nD:  noise.silo\nMesh2D \nPoint: &lt;-1.83673, 1.83673&gt;\nNode:...</font>
+    <font color="#a02030">#  ...\nhgslice:  &lt;nodal&gt; = 4.04322\n\n']</font>
+    <font color="#a02030"># pick }</font>
+    <font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">'pick string'</font><font color="#4000C0">,</font><font color="#000000">s</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">'hgslice:  &lt;nodal&gt; = 2.472'</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">'pick string'</font><font color="#4000C0">,</font><font color="#000000">s</font><font color="#4000C0">[</font><font color="#0080C0">3</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">'hgslice:  &lt;nodal&gt; = 4.043'</font><font color="#4000C0">)</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'pick error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'pick exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'pick exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">lineout1</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># lineout 1 {</font>
+    <font color="#000000">p0</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">5</font><font color="#4000C0">,</font><font color="#4000C0">-</font><font color="#0080C0">3</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">p1</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font> <font color="#0080C0">5</font><font color="#4000C0">,</font> <font color="#0080C0">8</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Lineout</font><font color="#4000C0">(</font><font color="#000000">p0</font><font color="#4000C0">,</font> <font color="#000000">p1</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Specify 65 sample points</font>
+    <font color="#000000">Lineout</font><font color="#4000C0">(</font><font color="#000000">p0</font><font color="#4000C0">,</font> <font color="#000000">p1</font><font color="#4000C0">,</font> <font color="#0080C0">65</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Do three variables ("default" is "hardyglobal")</font>
+    <font color="#000000">Lineout</font><font color="#4000C0">(</font><font color="#000000">p0</font><font color="#4000C0">,</font> <font color="#000000">p1</font><font color="#4000C0">,</font> <font color="#4000C0">(</font><font color="#008000">"default"</font><font color="#4000C0">,</font> <font color="#008000">"airVf"</font><font color="#4000C0">,</font> <font color="#008000">"radial"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#a02030"># lineout 1 }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'lineout 1 error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'lineout 1 exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'lineout 1 exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#a02030"># No cleanup because next method uses results from this</font>
+  <font color="#a02030"># DeleteWindow()</font>
+  <font color="#a02030"># vqr_cleanup()</font>
+
+<font color="#C00000">def</font> <font color="#000000">lineout2</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># lineout 2 {</font>
+    <font color="#a02030"># Set active window to one containing Lineout curve plots (typically #2)</font>
+    <font color="#000000">SetActiveWindow</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Get array of x,y pairs for first curve plot in window</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">hg_vals</font> <font color="#4000C0">=</font> <font color="#000000">GetPlotInformation</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#008000">"Curve"</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Get array of x,y pairs for second curve plot in window</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">avf_vals</font> <font color="#4000C0">=</font> <font color="#000000">GetPlotInformation</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#008000">"Curve"</font><font color="#4000C0">]</font>
+    <font color="#a02030"># Get array of x,y pairs for third curve plot in window</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+    <font color="#000000">rad_vals</font> <font color="#4000C0">=</font> <font color="#000000">GetPlotInformation</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#008000">"Curve"</font><font color="#4000C0">]</font>
+
+    <font color="#a02030"># Write it as CSV data to a file</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">len</font><font color="#4000C0">(</font><font color="#000000">hg_vals</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#0080C0">2</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">idx</font> <font color="#4000C0">=</font> <font color="#000000">i</font><font color="#4000C0">*</font><font color="#0080C0">2</font><font color="#4000C0">+</font><font color="#0080C0">1</font> <font color="#a02030"># take only y-values in each array</font>
+        <font color="#000000">print</font><font color="#4000C0">(</font><font color="#008000">"%g,%g,%g"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">hg_vals</font><font color="#4000C0">[</font><font color="#000000">idx</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">avf_vals</font><font color="#4000C0">[</font><font color="#000000">idx</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">rad_vals</font><font color="#4000C0">[</font><font color="#000000">idx</font><font color="#4000C0">]</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#a02030"># lineout 2 }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'lineout 2 error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'lineout 2 exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'lineout 2 exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">DeleteWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">query</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># query {</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"NumNodes"</font><font color="#4000C0">)</font>
+    <font color="#000000">print</font><font color="#4000C0">(</font><font color="#008000">"The float value is: %g"</font> <font color="#4000C0">%</font> <font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"NumNodes"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># query }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'query error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'query exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'query exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">finding_the_min_and_max</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># finding the min and max {</font>
+    <font color="#a02030"># Define a helper function to get node/zone id's from query string.</font>
+    <font color="#C00000">def</font> <font color="#000000">GetMinMaxIds</font><font color="#4000C0">(</font><font color="#000000">qstr</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">import</font> <font color="#000000">string</font>
+        <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">qstr</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#008000">' '</font><font color="#4000C0">)</font>
+        <font color="#000000">retval</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+        <font color="#000000">nextGood</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+        <font color="#000000">idType</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+        <font color="#C00000">for</font> <font color="#000000">token</font> <font color="#C00000">in</font> <font color="#000000">s</font><font color="#4000C0">:</font>
+            <font color="#C00000">if</font> <font color="#000000">token</font> <font color="#4000C0">==</font> <font color="#008000">"(zone"</font> <font color="#C00000">or</font> <font color="#000000">token</font> <font color="#4000C0">==</font> <font color="#008000">"(cell"</font><font color="#4000C0">:</font>
+                <font color="#000000">idType</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+                <font color="#000000">nextGood</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+                <font color="#C00000">continue</font>
+            <font color="#C00000">elif</font> <font color="#000000">token</font> <font color="#4000C0">==</font> <font color="#008000">"(node"</font><font color="#4000C0">:</font>
+                <font color="#000000">idType</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+                <font color="#000000">nextGood</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+                <font color="#C00000">continue</font>
+            <font color="#C00000">if</font> <font color="#000000">nextGood</font> <font color="#4000C0">==</font> <font color="#0080C0">1</font><font color="#4000C0">:</font>
+                <font color="#000000">nextGood</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+                <font color="#000000">retval</font> <font color="#4000C0">=</font> <font color="#000000">retval</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#4000C0">(</font><font color="#000000">idType</font><font color="#4000C0">,</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">token</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+        <font color="#C00000">return</font> <font color="#000000">retval</font>
+
+    <font color="#a02030"># Set up a plot</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hgslice"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"MinMax"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Do picks on the ids that were returned by MinMax.</font>
+    <font color="#C00000">for</font> <font color="#000000">ids</font> <font color="#C00000">in</font> <font color="#000000">GetMinMaxIds</font><font color="#4000C0">(</font><font color="#000000">GetQueryOutputString</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">idType</font> <font color="#4000C0">=</font> <font color="#000000">ids</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+        <font color="#000000">id</font> <font color="#4000C0">=</font> <font color="#000000">ids</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font>
+        <font color="#C00000">if</font> <font color="#000000">idType</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+            <font color="#000000">PickByNode</font><font color="#4000C0">(</font><font color="#000000">id</font><font color="#4000C0">)</font>
+        <font color="#C00000">else</font><font color="#4000C0">:</font>
+            <font color="#000000">PickByZone</font><font color="#4000C0">(</font><font color="#000000">id</font><font color="#4000C0">)</font>
+    <font color="#a02030"># finding the min and max }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'finding the min and max error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'finding the min and max exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'finding the min and max exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">defining_expressions</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">pick</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">lineout1</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">lineout2</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">query</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">finding_the_min_and_max</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
