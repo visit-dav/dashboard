@@ -1,0 +1,248 @@
+<html><body bgcolor="#e0e0e0"><head><title>operators/defer_expr.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  defer_expr.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  '2433, '1527, '6630, '6631, '6676, '6637</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Hank Childs</font>
+<font color="#a02030">#  Date:       September 21, 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Thu Dec 29 11:29:08 PST 2005</font>
+<font color="#a02030">#    Widen color range of vector plot to sidestep precision issues between</font>
+<font color="#a02030">#    optimized and non-optimized binaries.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Thu Jan 17 15:44:06 PST 2008</font>
+<font color="#a02030">#    Explicitly specify the color table for the vector plot.  This is an issue</font>
+<font color="#a02030">#    because this test runs with "-config" (*not* "-noconfig") and the default</font>
+<font color="#a02030">#    color table can get confused if the user has a color table in his .visit</font>
+<font color="#a02030">#    directory that collides with the normal default ("hot").  So we're</font>
+<font color="#a02030">#    skirting that issue by explicitly specifying the color table.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Jeremy Meredith, Mon Jul 14 12:28:50 EDT 2008</font>
+<font color="#a02030">#    Allow the vector plot to show all vectors (even ones not from</font>
+<font color="#a02030">#    from original cells/nodes) to match the old behavior.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Hank Childs, Wed Dec 31 14:32:34 PST 2008</font>
+<font color="#a02030">#    Rename ResamplePluginAtts to ResampleAtts.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Thu Mar 25 09:57:34 PDT 2010</font>
+<font color="#a02030">#    Added call(s) to DrawPlots() b/c of changes to the default plot state</font>
+<font color="#a02030">#    behavior when an operator is added.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Wed Apr 18 15:40:47 PDT 2012</font>
+<font color="#a02030">#    Make vectors constant color for test 8.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Mon Nov 28, 2022</font>
+<font color="#a02030">#    Remove obsolete 'colorByMag' vector att with 'colorByMagnitude'.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"en"</font><font color="#4000C0">,</font> <font color="#008000">"external_node(mesh1)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"en"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isovolume"</font><font color="#4000C0">)</font>
+<font color="#000000">iso_atts</font> <font color="#4000C0">=</font> <font color="#000000">IsovolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">iso_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"t"</font>
+<font color="#000000">iso_atts</font><font color="#4000C0">.</font><font color="#000000">lbound</font> <font color="#4000C0">=</font> <font color="#0080C0">500</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">iso_atts</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Save a picture before deferring the expression evaluation.</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_01"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Test that the external node operator can find the external nodes</font>
+<font color="#a02030"># on a 2D slice.</font>
+<font color="#000000">d</font> <font color="#4000C0">=</font> <font color="#000000">DeferExpressionAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"en"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_02"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now test that the external node expression can find the external nodes</font>
+<font color="#a02030"># on a 3D dataset (before the slice).  This should be an identical picture</font>
+<font color="#a02030"># to what's above (bar interpolation from the slice).</font>
+<font color="#000000">DemoteOperator</font><font color="#4000C0">(</font><font color="#0080C0">2</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_03"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isovolume"</font><font color="#4000C0">)</font>
+<font color="#000000">iso_atts</font> <font color="#4000C0">=</font> <font color="#000000">IsovolumeAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">iso_atts</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"t"</font>
+<font color="#000000">iso_atts</font><font color="#4000C0">.</font><font color="#000000">ubound</font> <font color="#4000C0">=</font> <font color="#0080C0">500</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">iso_atts</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">thres_atts</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">upperBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">outputMeshType</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"en"</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">thres_atts</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_04"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"X1"</font><font color="#4000C0">,</font> <font color="#008000">"coord(mesh1)[0]"</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"X2"</font><font color="#4000C0">,</font> <font color="#008000">"coord(mesh1)[0]"</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"X3"</font><font color="#4000C0">,</font> <font color="#008000">"coord(mesh1)[0]"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"X1"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Transform by 45 degrees.</font>
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">TransformAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">doRotate</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">rotateAxis</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">rotateAmount</font> <font color="#4000C0">=</font> <font color="#0080C0">45</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Transform"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now evaluate X2 after transforming</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"X2"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now threshold out where X2 is bigger than 0 (after the transform)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"X2"</font><font color="#4000C0">)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.0</font><font color="#4000C0">)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">upperBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">1000.0</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">thres_atts</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now transform by another 45 degrees</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Transform"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Evaluate X3 after the new transform.</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"X3"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now threshold out where X3 is bigger than 0 (after the new transform)</font>
+<font color="#000000">thres_atts</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"X3"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">thres_atts</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_05"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Now do the same thing, but defer X1 until the end of the transforms.</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"X1"</font><font color="#4000C0">)</font>
+<font color="#000000">SetDefaultOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#a02030"># This should be the same geometry as '05, but the color should be different.</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_06"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DefineVectorExpression</font><font color="#4000C0">(</font><font color="#008000">"normals"</font><font color="#4000C0">,</font> <font color="#008000">"cell_surface_normal(mesh1)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"normals"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">origOnly</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">min</font> <font color="#4000C0">=</font> <font color="#0080C0">0.5</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">max</font> <font color="#4000C0">=</font> <font color="#0080C0">1.5</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"hot"</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">useStride</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">stride</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"ExternalSurface"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#008000">"normals"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_07"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Contour"</font><font color="#4000C0">,</font> <font color="#008000">"t"</font><font color="#4000C0">)</font>
+<font color="#000000">c</font> <font color="#4000C0">=</font> <font color="#000000">ContourAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">Value</font>
+<font color="#000000">c</font><font color="#4000C0">.</font><font color="#000000">contourValue</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">500</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">c</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"normals"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">origOnly</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorByMagnitude</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">vectorColor</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">255</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">,</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">255</font><font color="#4000C0">)</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isosurface"</font><font color="#4000C0">)</font>
+<font color="#000000">i</font> <font color="#4000C0">=</font> <font color="#000000">IsosurfaceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">i</font><font color="#4000C0">.</font><font color="#000000">contourMethod</font> <font color="#4000C0">=</font> <font color="#000000">i</font><font color="#4000C0">.</font><font color="#000000">Value</font>
+<font color="#000000">i</font><font color="#4000C0">.</font><font color="#000000">contourValue</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">500</font><font color="#4000C0">)</font>
+<font color="#000000">i</font><font color="#4000C0">.</font><font color="#000000">variable</font> <font color="#4000C0">=</font> <font color="#008000">"t"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#008000">"normals"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_08"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"mesh_quality/max_edge_length"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_09"</font><font color="#4000C0">)</font>
+
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"mesh_quality/max_edge_length"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_10"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">r</font> <font color="#4000C0">=</font> <font color="#000000">ResampleAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">samplesX</font> <font color="#4000C0">=</font> <font color="#0080C0">50</font>
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">samplesY</font> <font color="#4000C0">=</font> <font color="#0080C0">50</font>
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">samplesZ</font> <font color="#4000C0">=</font> <font color="#0080C0">50</font>
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">defaultValue</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">100</font>
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">distributedResample</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"procid"</font><font color="#4000C0">,</font> <font color="#008000">"procid(mesh1)"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"procid"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Resample"</font><font color="#4000C0">)</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">r</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Threshold"</font><font color="#4000C0">)</font>
+<font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">ThresholdAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">lowerBounds</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">10.0</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">listedVarNames</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">)</font>
+<font color="#000000">t</font><font color="#4000C0">.</font><font color="#000000">outputMeshType</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">t</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#008000">"procid"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_11"</font><font color="#4000C0">)</font>
+
+<font color="#000000">r</font><font color="#4000C0">.</font><font color="#000000">distributedResample</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">r</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_12"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">DefineVectorExpression</font><font color="#4000C0">(</font><font color="#008000">"sn"</font><font color="#4000C0">,</font> <font color="#008000">"recenter(-cell_surface_normal(mesh1))"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"sn"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">VectorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">origOnly</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"hot"</font>
+<font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"ExternalSurface"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"DeferExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">d</font><font color="#4000C0">.</font><font color="#000000">exprs</font> <font color="#4000C0">=</font> <font color="#008000">"sn"</font>
+<font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"defer_expr_13"</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>

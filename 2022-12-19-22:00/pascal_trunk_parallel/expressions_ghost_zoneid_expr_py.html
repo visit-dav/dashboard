@@ -1,0 +1,46 @@
+<html><body bgcolor="#e0e0e0"><head><title>expressions/ghost_zoneid_expr.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  ghost_zoneid_expr.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      Ghost Zone Id Expression</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Justin Privitera</font>
+<font color="#a02030">#  Date:       Wed Apr 6 15:03:47 PDT 2022</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_ucd3d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#000000">meshName</font> <font color="#4000C0">=</font> <font color="#008000">"mesh1"</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Set precision for rounding operations</font>
+<font color="#a02030">#</font>
+<font color="#000000">Prec</font> <font color="#4000C0">=</font> <font color="#0080C0">5</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Ghost Zone ID Expression"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"ghostzonevar"</font><font color="#4000C0">,</font> <font color="#008000">"ghost_zoneid("</font> <font color="#4000C0">+</font> <font color="#000000">meshName</font> <font color="#4000C0">+</font> <font color="#008000">")"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"ghostzonevar"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"MinMax"</font><font color="#4000C0">)</font>
+<font color="#000000">q</font> <font color="#4000C0">=</font> <font color="#000000">GetQueryOutputObject</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"Minimum Field Value"</font><font color="#4000C0">,</font> <font color="#000000">q</font><font color="#4000C0">[</font><font color="#008000">'min'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#0080C0">0.0</font><font color="#4000C0">,</font> <font color="#000000">Prec</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"Maximum Field Value"</font><font color="#4000C0">,</font> <font color="#000000">q</font><font color="#4000C0">[</font><font color="#008000">'max'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#0080C0">0.0</font><font color="#4000C0">,</font> <font color="#000000">Prec</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Ghost Zone ID Expression w/ Inverse Ghost Zones Debugging"</font><font color="#4000C0">)</font>
+
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"InverseGhostZone"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"ghostzonevar"</font><font color="#4000C0">,</font> <font color="#008000">"ghost_zoneid("</font> <font color="#4000C0">+</font> <font color="#000000">meshName</font> <font color="#4000C0">+</font> <font color="#008000">")"</font><font color="#4000C0">)</font>
+<font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"ghostzonevar"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"MinMax"</font><font color="#4000C0">)</font>
+<font color="#000000">q</font> <font color="#4000C0">=</font> <font color="#000000">GetQueryOutputObject</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"Minimum Field Value"</font><font color="#4000C0">,</font> <font color="#000000">q</font><font color="#4000C0">[</font><font color="#008000">'min'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#0080C0">1.0</font><font color="#4000C0">,</font> <font color="#000000">Prec</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"Maximum Field Value"</font><font color="#4000C0">,</font> <font color="#000000">q</font><font color="#4000C0">[</font><font color="#008000">'max'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#0080C0">1.0</font><font color="#4000C0">,</font> <font color="#000000">Prec</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
