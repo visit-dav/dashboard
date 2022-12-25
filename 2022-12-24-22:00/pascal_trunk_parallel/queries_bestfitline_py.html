@@ -1,0 +1,204 @@
+<html><body bgcolor="#e0e0e0"><head><title>queries/bestfitline.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  bestfit.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      queries     - "Best Fit Line"</font>
+<font color="#a02030">#              expressions - distance_to_best_fit_line</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Defect ID:  none</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Brad Whitlock</font>
+<font color="#a02030">#  Date:       Fri Nov 18 16:43:42 PST 2005</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Mark C. Miller, Tue Mar 14 07:54:20 PST 2006</font>
+<font color="#a02030">#    Changed how full-frame is turned on</font>
+<font color="#a02030">#    </font>
+<font color="#a02030">#    Mark C. Miller, Wed Jan 20 07:37:11 PST 2010</font>
+<font color="#a02030">#    Added ability to swtich between Silo's HDF5 and PDB data.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Matt Larsen Wed May 09 08:31:00 PST 2018</font>
+<font color="#a02030">#    Adding view reset so image actual shows a line </font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">import</font> <font color="#000000">math</font>
+
+<font color="#C00000">def</font> <font color="#000000">writeDataSet</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">nts</font> <font color="#4000C0">=</font> <font color="#0080C0">100</font>
+    <font color="#000000">nsamples</font> <font color="#4000C0">=</font> <font color="#0080C0">100</font>
+    <font color="#000000">x0</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">5.</font>
+    <font color="#000000">y0</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">5.</font>
+    <font color="#000000">x1</font> <font color="#4000C0">=</font> <font color="#0080C0">5.</font>
+    <font color="#000000">y1</font> <font color="#4000C0">=</font> <font color="#0080C0">5.</font>
+
+    <font color="#000000">names</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+    <font color="#000000">coefficients</font> <font color="#4000C0">=</font> <font color="#4000C0">[</font><font color="#4000C0">]</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">nts</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">nts</font> <font color="#4000C0">-</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+        <font color="#000000">y_left</font> <font color="#4000C0">=</font> <font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#000000">y1</font> <font color="#4000C0">+</font> <font color="#4000C0">(</font><font color="#0080C0">1.</font> <font color="#4000C0">-</font> <font color="#000000">t</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#000000">y0</font>
+        <font color="#000000">y_right</font> <font color="#4000C0">=</font> <font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#000000">y0</font> <font color="#4000C0">+</font> <font color="#4000C0">(</font><font color="#0080C0">1.</font> <font color="#4000C0">-</font> <font color="#000000">t</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#000000">y1</font>
+        <font color="#000000">filename</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data/line%04d.curve"</font><font color="#4000C0">)</font> <font color="#4000C0">%</font> <font color="#000000">i</font>
+        <font color="#000000">names</font> <font color="#4000C0">=</font> <font color="#000000">names</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#000000">filename</font><font color="#4000C0">]</font>
+        <font color="#C00000">try</font><font color="#4000C0">:</font>
+            <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#000000">open</font><font color="#4000C0">(</font><font color="#000000">filename</font><font color="#4000C0">,</font> <font color="#008000">"w"</font><font color="#4000C0">)</font>
+
+            <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">write</font><font color="#4000C0">(</font><font color="#008000">"#TIME %g\n"</font> <font color="#4000C0">%</font> <font color="#000000">t</font><font color="#4000C0">)</font>
+            <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">write</font><font color="#4000C0">(</font><font color="#008000">"#line\n"</font><font color="#4000C0">)</font>
+
+            <font color="#000000">m</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#000000">y_right</font> <font color="#4000C0">-</font> <font color="#000000">y_left</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#4000C0">(</font><font color="#000000">x1</font> <font color="#4000C0">-</font> <font color="#000000">x0</font><font color="#4000C0">)</font>
+            <font color="#000000">angle</font> <font color="#4000C0">=</font> <font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#0080C0">3.14159</font> <font color="#4000C0">*</font> <font color="#0080C0">2.</font>
+            <font color="#000000">b</font>  <font color="#4000C0">=</font> <font color="#000000">math</font><font color="#4000C0">.</font><font color="#000000">sin</font><font color="#4000C0">(</font><font color="#000000">angle</font><font color="#4000C0">)</font>
+
+            <font color="#a02030">#print "Y = %gX + %g" % (m, b)</font>
+            <font color="#000000">coefficients</font> <font color="#4000C0">=</font> <font color="#000000">coefficients</font> <font color="#4000C0">+</font> <font color="#4000C0">[</font><font color="#4000C0">(</font><font color="#000000">m</font><font color="#4000C0">,</font> <font color="#000000">b</font><font color="#4000C0">)</font><font color="#4000C0">]</font>
+
+            <font color="#C00000">for</font> <font color="#000000">j</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">nsamples</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                <font color="#000000">t2</font> <font color="#4000C0">=</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">j</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">nsamples</font> <font color="#4000C0">-</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+                <font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#000000">t2</font> <font color="#4000C0">*</font> <font color="#000000">x1</font> <font color="#4000C0">+</font> <font color="#4000C0">(</font><font color="#0080C0">1.</font> <font color="#4000C0">-</font> <font color="#000000">t2</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#000000">x0</font>
+                <font color="#000000">y</font> <font color="#4000C0">=</font> <font color="#000000">t2</font> <font color="#4000C0">*</font> <font color="#000000">y_right</font> <font color="#4000C0">+</font> <font color="#4000C0">(</font><font color="#0080C0">1.</font> <font color="#4000C0">-</font> <font color="#000000">t2</font><font color="#4000C0">)</font> <font color="#4000C0">*</font> <font color="#000000">y_left</font> <font color="#4000C0">+</font> <font color="#000000">b</font>
+                <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">write</font><font color="#4000C0">(</font><font color="#008000">"%g %g\n"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">x</font><font color="#4000C0">,</font> <font color="#000000">y</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+            <font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">close</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#C00000">except</font><font color="#4000C0">:</font>
+            <font color="#C00000">break</font>
+
+    <font color="#C00000">return</font> <font color="#4000C0">(</font><font color="#000000">names</font><font color="#4000C0">,</font> <font color="#000000">coefficients</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">removeFiles</font><font color="#4000C0">(</font><font color="#000000">ds</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#C00000">for</font> <font color="#000000">d</font> <font color="#C00000">in</font> <font color="#000000">ds</font><font color="#4000C0">:</font>
+        <font color="#C00000">try</font><font color="#4000C0">:</font>
+            <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">unlink</font><font color="#4000C0">(</font><font color="#000000">d</font><font color="#4000C0">)</font>
+        <font color="#C00000">except</font><font color="#4000C0">:</font>
+            <font color="#000000">print</font><font color="#4000C0">(</font><font color="#008000">"Could not remove "</font><font color="#4000C0">,</font> <font color="#000000">d</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test best fit line of known lines from Curve plots</font>
+<font color="#a02030">#</font>
+<font color="#C00000">def</font> <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">data</font> <font color="#4000C0">=</font> <font color="#000000">writeDataSet</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">filenames</font> <font color="#4000C0">=</font> <font color="#000000">data</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font>
+    <font color="#000000">coefficients</font> <font color="#4000C0">=</font> <font color="#000000">data</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"curve_test_data/line*.curve database"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Curve"</font><font color="#4000C0">,</font> <font color="#008000">"line"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#008000">""</font>
+    <font color="#C00000">try</font><font color="#4000C0">:</font>
+        <font color="#C00000">for</font> <font color="#000000">state</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#000000">len</font><font color="#4000C0">(</font><font color="#000000">coefficients</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#0080C0">2</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+            <font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#000000">state</font><font color="#4000C0">)</font>
+            <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Best Fit Line"</font><font color="#4000C0">)</font>
+            <font color="#000000">values</font> <font color="#4000C0">=</font> <font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+            <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#008000">"Original (m=%g, b=%g)\t\t\tCalculated (m=%g, b=%g, r=%g)\n"</font> <font color="#4000C0">%</font>\
+            <font color="#4000C0">(</font><font color="#000000">coefficients</font><font color="#4000C0">[</font><font color="#000000">state</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">coefficients</font><font color="#4000C0">[</font><font color="#000000">state</font><font color="#4000C0">]</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">values</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font> \
+            <font color="#000000">values</font><font color="#4000C0">[</font><font color="#0080C0">1</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">values</font><font color="#4000C0">[</font><font color="#0080C0">2</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+    <font color="#C00000">except</font><font color="#4000C0">:</font>
+        <font color="#C00000">pass</font>
+
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"bestline_1_00"</font><font color="#4000C0">,</font> <font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">removeFiles</font><font color="#4000C0">(</font><font color="#000000">data</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test best fit line of 2D Scatter plots</font>
+<font color="#a02030">#</font>
+<font color="#C00000">def</font> <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># Do Scatter plot of d vs d since we know that it will make Y=X</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Scatter"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">ScatterAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var2</font> <font color="#4000C0">=</font> <font color="#008000">"d"</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var2Role</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">Coordinate1</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3Role</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">NONE</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var4Role</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">NONE</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">scaleCube</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizePixels</font> <font color="#4000C0">=</font> <font color="#0080C0">5</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Turn on Fullframe</font>
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">GetView2D</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">fullFrameActivationMode</font> <font color="#4000C0">=</font> <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">On</font>
+    <font color="#000000">SetView2D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_00"</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Best Fit Line"</font><font color="#4000C0">)</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_01"</font><font color="#4000C0">,</font> <font color="#000000">GetQueryOutputString</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Check the best fit with another known line eq.</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"t"</font><font color="#4000C0">,</font> <font color="#008000">"zoneid(curvmesh2d)"</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"line"</font><font color="#4000C0">,</font> <font color="#008000">"t * 0.33333 + 10."</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Scatter"</font><font color="#4000C0">,</font> <font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var2</font> <font color="#4000C0">=</font> <font color="#008000">"line"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_02"</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Best Fit Line"</font><font color="#4000C0">)</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_03"</font><font color="#4000C0">,</font> <font color="#000000">GetQueryOutputString</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Make the scatter plot be d vs. dpu</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Scatter"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"dpu"</font><font color="#4000C0">,</font> <font color="#008000">"d + u / 3."</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var2</font> <font color="#4000C0">=</font> <font color="#008000">"dpu"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_04"</font><font color="#4000C0">)</font>
+    <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Best Fit Line"</font><font color="#4000C0">)</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"bestline_2_05"</font><font color="#4000C0">,</font> <font color="#000000">GetQueryOutputString</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#C00000">return</font> <font color="#000000">s</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Test distance to best fit line expression. The colors should appear</font>
+<font color="#a02030"># to be banded about the best fit line.</font>
+<font color="#a02030">#</font>
+<font color="#C00000">def</font> <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#a02030"># We still have the Scatter plot from the previous test. Color it</font>
+    <font color="#a02030"># by the distance from the best fit line.</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"DBFL"</font><font color="#4000C0">,</font> <font color="#008000">"distance_to_best_fit_line(d, dpu)"</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"DBFL2"</font><font color="#4000C0">,</font> <font color="#008000">"distance_to_best_fit_line2(d, dpu)"</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3</font> <font color="#4000C0">=</font> <font color="#008000">"DBFL"</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3Role</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">Color</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"difference"</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">pointSizePixels</font> <font color="#4000C0">=</font> <font color="#0080C0">10</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_3_00"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3</font> <font color="#4000C0">=</font> <font color="#008000">"DBFL2"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_3_01"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"dpus"</font><font color="#4000C0">,</font> <font color="#008000">"d + u / 2. + sin(d * 5.) * 2."</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"DBFL3"</font><font color="#4000C0">,</font> <font color="#008000">"distance_to_best_fit_line(d, dpus)"</font><font color="#4000C0">)</font>
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"DBFL4"</font><font color="#4000C0">,</font> <font color="#008000">"distance_to_best_fit_line2(d, dpus)"</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var2</font> <font color="#4000C0">=</font> <font color="#008000">"dpus"</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3</font> <font color="#4000C0">=</font> <font color="#008000">"DBFL3"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_3_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">var3</font> <font color="#4000C0">=</font> <font color="#008000">"DBFL4"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"bestline_3_03"</font><font color="#4000C0">)</font>
+
+    <font color="#C00000">return</font>
+
+
+<font color="#C00000">def</font> <font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">test1</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">test2</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">test3</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">main</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
