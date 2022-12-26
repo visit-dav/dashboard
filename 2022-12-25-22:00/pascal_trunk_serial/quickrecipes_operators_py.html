@@ -1,0 +1,80 @@
+<html><body bgcolor="#e0e0e0"><head><title>quickrecipes/operators.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Fri Aug 26 14:31:48 PDT 2022</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Get some utils shared across many .py files used for quick recipes.</font>
+<font color="#a02030">#</font>
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">'quickrecipes'</font><font color="#4000C0">,</font><font color="#008000">'vqr_utils.py.inc'</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">adding_operators</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># adding operators {</font>
+    <font color="#a02030"># Names of all available operator plugins as a python tuple</font>
+    <font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#000000">OperatorPlugins</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">print</font><font color="#4000C0">(</font><font color="#000000">x</font><font color="#4000C0">)</font>
+    <font color="#a02030"># will produce output something like...</font>
+    <font color="#a02030"># ('AMRStitchCell', 'AxisAlignedSlice4D', 'BoundaryOp', 'Box', 'CartographicProjection',</font>
+    <font color="#a02030">#  'Clip', 'Cone', 'ConnectedComponents', 'CoordSwap', 'CreateBonds', 'Cylinder',</font>
+    <font color="#a02030">#  'DataBinning', 'DeferExpression', 'Displace', 'DualMesh', 'Edge', 'Elevate',</font>
+    <font color="#a02030">#  'EllipsoidSlice', 'Explode', 'ExternalSurface', ...</font>
+    <font color="#a02030">#  ..., 'TriangulateRegularPoints', 'Tube')</font>
+
+    <font color="#a02030"># We need at least one plot that we can add operators to</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"dx"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font><font color="#008000">"mesh1"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Add Isovolume and Slice operators using whatever their default attributes are.</font>
+    <font color="#a02030"># The non-zero 2nd arg means to add the operator to all plots. If the 2nd argument</font>
+    <font color="#a02030"># is not present or zero, it means to add the operator only to the *active* plots</font>
+    <font color="#a02030"># (by default, the *active* plots are just the last plot added).</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Isovolume"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># adding operators }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'adding operators error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'adding operators exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'adding operators exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">setting_operator_attributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># setting operator attributes {</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#008000">"~juanita/silo/stuff/noise.silo"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"hardyglobal"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">SliceAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">originType</font> <font color="#4000C0">=</font> <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">Percent</font>
+    <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">project2d</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">nSteps</font> <font color="#4000C0">=</font> <font color="#0080C0">20</font>
+    <font color="#C00000">for</font> <font color="#000000">axis</font> <font color="#C00000">in</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">1</font><font color="#4000C0">,</font><font color="#0080C0">2</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+      <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">axisType</font> <font color="#4000C0">=</font> <font color="#000000">axis</font>
+      <font color="#C00000">for</font> <font color="#000000">step</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">nSteps</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">t</font> <font color="#4000C0">=</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">step</font><font color="#4000C0">)</font> <font color="#4000C0">/</font> <font color="#000000">float</font><font color="#4000C0">(</font><font color="#000000">nSteps</font> <font color="#4000C0">-</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+        <font color="#000000">s</font><font color="#4000C0">.</font><font color="#000000">originPercent</font> <font color="#4000C0">=</font> <font color="#000000">t</font> <font color="#4000C0">*</font> <font color="#0080C0">100.</font>
+        <font color="#000000">SetOperatorOptions</font><font color="#4000C0">(</font><font color="#000000">s</font><font color="#4000C0">)</font>
+        <font color="#000000">SaveWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># setting operator attributes }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'setting operator attributes error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'setting operator attributes exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'setting operator attributes exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">adding_operators</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">setting_operator_attributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
