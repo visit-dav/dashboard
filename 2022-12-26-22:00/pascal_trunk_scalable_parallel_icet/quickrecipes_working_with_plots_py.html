@@ -1,0 +1,196 @@
+<html><body bgcolor="#e0e0e0"><head><title>quickrecipes/working_with_plots.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Mark C. Miller, Fri Aug 26 14:31:48 PDT 2022</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#a02030">#</font>
+<font color="#a02030"># Get some utils shared across many .py files used for quick recipes.</font>
+<font color="#a02030">#</font>
+<font color="#000000">Source</font><font color="#4000C0">(</font><font color="#000000">tests_path</font><font color="#4000C0">(</font><font color="#008000">'quickrecipes'</font><font color="#4000C0">,</font><font color="#008000">'vqr_utils.py.inc'</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">creating_a_plot</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># creating a plot {</font>
+    <font color="#a02030"># Names of all available plot plugins as a python tuple</font>
+    <font color="#000000">x</font> <font color="#4000C0">=</font> <font color="#000000">PlotPlugins</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># print(x) will produce something like...</font>
+    <font color="#a02030">#     ('Boundary', 'Contour', 'Curve', 'FilledBoundary', 'Histogram',</font>
+    <font color="#a02030">#     'Label', 'Mesh', 'Molecule', 'MultiCurve', 'ParallelCoordinates',</font>
+    <font color="#a02030">#     'Pseudocolor', 'Scatter', 'Spreadsheet', 'Subset', 'Tensor',</font>
+    <font color="#a02030">#     'Truecolor', 'Vector', 'Volume')</font>
+    <font color="#000000">print</font><font color="#4000C0">(</font><font color="#000000">x</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Create plots with AddPlot(&lt;plot-plugin-name&gt;,&lt;database-variable-name&gt;)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"quadmesh"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Draw the plots</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#a02030"># creating a plot }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'creating a plot error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'creating a plot exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'creating a plot exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">plotting_materials</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"globe.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># plotting materials {</font>
+    <font color="#a02030"># Plot material boundaries</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Boundary"</font><font color="#4000C0">,</font> <font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># Plot materials</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font> <font color="#008000">"mat1"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># plotting materials }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'plotting materials error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'plotting materials exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'plotting materials exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">setting_plot_attributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># setting plot attributes {</font>
+    <font color="#a02030"># Creating a Pseudocolor plot and setting min/max values.</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># print p to find the names of members you want to change</font>
+    <font color="#a02030">#</font>
+    <font color="#a02030"># print(p) will produce output somewhat like...</font>
+    <font color="#a02030">#     scaling = Linear  # Linear, Log, Skew</font>
+    <font color="#a02030">#     skewFactor = 1</font>
+    <font color="#a02030">#     limitsMode = OriginalData  # OriginalData, ActualData</font>
+    <font color="#a02030">#     minFlag = 0</font>
+    <font color="#a02030">#     min = 0</font>
+    <font color="#a02030">#     useBelowMinColor = 0</font>
+    <font color="#a02030">#     belowMinColor = (0, 0, 0, 255)</font>
+    <font color="#a02030">#     maxFlag = 0</font>
+    <font color="#a02030">#     max = 1</font>
+    <font color="#a02030">#     .</font>
+    <font color="#a02030">#     .</font>
+    <font color="#a02030">#     .</font>
+    <font color="#000000">print</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Set the min/max values</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">min</font><font color="#4000C0">,</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">minFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">0.0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">max</font><font color="#4000C0">,</font> <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">maxFlag</font> <font color="#4000C0">=</font> <font color="#0080C0">10.0</font><font color="#4000C0">,</font> <font color="#0080C0">1</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#a02030"># setting plot attributes }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'setting plot attributes message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'setting plot attributes exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'setting plot attributes exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">working_with_multiple_plots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"tire.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># working with multiple plots {</font>
+
+    <font color="#a02030"># Create more than 1 plot of the same type</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"temperature"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># List the plots. The second plot should be active.</font>
+    <font color="#000000">ListPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># The output from ListPlots() will look something like...</font>
+    <font color="#a02030">#     Plot[0]|id=5;type="Pseudocolor";database="localhost:/Users/miller86/visit/visit/data/silo_hdf5_test_data/tire.silo";</font>
+    <font color="#a02030">#         var=pressure;active=0;hidden=0;framerange=(0, 0);keyframes={0};database keyframes={0};operators={};</font>
+    <font color="#a02030">#         activeOperator=-1</font>
+    <font color="#a02030">#     Plot[1]|id=6;type="Pseudocolor";database="localhost:/Users/miller86/visit/visit/data/silo_hdf5_test_data/tire.silo";</font>
+    <font color="#a02030">#         var=temperature;active=1;hidden=0;framerange=(0, 0);keyframes={0};database keyframes={0};operators={};</font>
+    <font color="#a02030">#         activeOperator=-1</font>
+    <font color="#a02030"># Note that active=1 for Plot[1] meaning plot #1 is the active plot</font>
+
+    <font color="#a02030"># Draw the plots</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Hide the first plot</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font> <font color="#a02030"># makes plot 0 the active plot</font>
+    <font color="#000000">HideActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Set both plots' color table to "hot"</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"hot"</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font><font color="#0080C0">1</font><font color="#4000C0">)</font><font color="#4000C0">)</font> <font color="#a02030"># makes both plots active</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Show the first plot again.</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">HideActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Delete the second plot</font>
+    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ListPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># working with multiple plots }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'working with multiple plots error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'working with multiple plots exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'working with multiple plots exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+  <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"tire.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">plots_in_the_error_state</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+  <font color="#C00000">try</font><font color="#4000C0">:</font>
+    <font color="#a02030"># plots in the error state {</font>
+
+    <font color="#a02030"># Open the database at state 20 and add plots for "pressure" and "transient".</font>
+    <font color="#a02030"># "transient" variable exists only in states 18...51.</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"wave.visit"</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#0080C0">20</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"pressure"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font><font color="#008000">"transient"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Start saving images from every 10th state starting at state 20 </font>
+    <font color="#a02030"># but take care to clean up when we get an error.</font>
+    <font color="#C00000">for</font> <font color="#000000">state</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">20</font><font color="#4000C0">,</font><font color="#000000">TimeSliderGetNStates</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#0080C0">10</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+        <font color="#000000">TimeSliderSetState</font><font color="#4000C0">(</font><font color="#000000">state</font><font color="#4000C0">)</font>
+
+        <font color="#C00000">if</font> <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#0080C0">0</font><font color="#4000C0">:</font>
+
+            <font color="#a02030"># Find plot(s) in error state and remove them</font>
+            <font color="#000000">pl</font> <font color="#4000C0">=</font> <font color="#000000">GetPlotList</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+            <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">pl</font><font color="#4000C0">.</font><font color="#000000">GetNumPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+                <font color="#C00000">if</font> <font color="#000000">pl</font><font color="#4000C0">.</font><font color="#000000">GetPlots</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">stateType</font> <font color="#4000C0">==</font> <font color="#000000">pl</font><font color="#4000C0">.</font><font color="#000000">GetPlots</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">Error</font><font color="#4000C0">:</font>
+                    <font color="#000000">SetActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">,</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+                    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+            <font color="#a02030"># Clear the last error message</font>
+            <font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+
+        <font color="#000000">SaveWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># plots in the error state }</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">'plots in the error state error message'</font><font color="#4000C0">,</font><font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font>
+    <font color="#000000">TestPOA</font><font color="#4000C0">(</font><font color="#008000">'plots in the error state exceptions'</font><font color="#4000C0">)</font>
+  <font color="#C00000">except</font> <font color="#000000">Exception</font> <font color="#C00000">as</font> <font color="#000000">inst</font><font color="#4000C0">:</font>
+    <font color="#000000">TestFOA</font><font color="#4000C0">(</font><font color="#008000">'plots in the error state exception "%s"'</font><font color="#4000C0">%</font><font color="#000000">str</font><font color="#4000C0">(</font><font color="#000000">inst</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">LINE</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#C00000">pass</font>
+  <font color="#000000">vqr_cleanup</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">creating_a_plot</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">plotting_materials</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">setting_plot_attributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">working_with_multiple_plots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">plots_in_the_error_state</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
