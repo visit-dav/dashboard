@@ -1,0 +1,106 @@
+<html><body bgcolor="#e0e0e0"><head><title>hybrid/py_exprs.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  py_exprs.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      python filters / python expressions</font>
+<font color="#a02030">#              plots     - Pseudocolor</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Cyrus Harrison</font>
+<font color="#a02030">#  Date:       Fri May 21 09:14:07 PDT 2010</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Eddie Rusu - Tue Jul 30 13:22:17 PDT 2019</font>
+<font color="#a02030">#  Added testing for python expressions with numpy mixed with simple</font>
+<font color="#a02030">#  expressions.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Kathleen Biagas Fri Mar 12, 2021</font>
+<font color="#a02030">#  Rename xx_simple_xx.py expression scripts to prevent them being run when</font>
+<font color="#a02030">#  passing file globs to test suite (eg tests/hybrid/*.py) </font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">import</font> <font color="#000000">os</font>
+<font color="#C00000">from</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font> <font color="#C00000">import</font> <font color="#000000">join</font> <font color="#C00000">as</font> <font color="#000000">pjoin</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"py_expr_script_00.vpe"</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"d_wave"</font><font color="#4000C0">,</font><font color="#4000C0">(</font><font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">,</font><font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d_wave"</font><font color="#4000C0">)</font>
+<font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Elevate"</font><font color="#4000C0">)</font>
+<font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.724969</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.544156</font><font color="#4000C0">,</font> <font color="#0080C0">0.422273</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.666667</font><font color="#4000C0">,</font> <font color="#0080C0">0.526085</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.377473</font><font color="#4000C0">,</font> <font color="#0080C0">0.198927</font><font color="#4000C0">,</font> <font color="#0080C0">0.904401</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">0.981769</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1.96354</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">1.96354</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+<font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0.5</font><font color="#4000C0">,</font> <font color="#0080C0">0.666667</font><font color="#4000C0">,</font> <font color="#0080C0">0.526085</font><font color="#4000C0">)</font>
+<font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_00"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+
+<font color="#a02030"># Test simple expressions mixed with python expressions using numpy</font>
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"simple_numpy_expr.vpe"</font><font color="#4000C0">)</font>
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"python_multiply"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">'d'</font><font color="#4000C0">,</font><font color="#008000">'p'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"python_multiply"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_01"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"python_simple_mix_01.vpe"</font><font color="#4000C0">)</font>
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"my_expr"</font><font color="#4000C0">,</font> <font color="#008000">"d*p"</font><font color="#4000C0">)</font>
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"python_with_simple"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">'d'</font><font color="#4000C0">,</font><font color="#008000">'p'</font><font color="#4000C0">,</font> <font color="#008000">'my_expr'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"python_with_simple"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_02"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"python_simple_mix_02.vpe"</font><font color="#4000C0">)</font>
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"python_with_python"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">'d'</font><font color="#4000C0">,</font><font color="#008000">'p'</font><font color="#4000C0">,</font> <font color="#008000">'python_multiply'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"python_with_python"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_03"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"simple_with_python"</font><font color="#4000C0">,</font> <font color="#008000">"python_multiply-p+d+p*p"</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"simple_with_python"</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">,</font> <font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_04"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"multi_rect2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">silo_data_path</font><font color="#4000C0">(</font><font color="#008000">"curv2d.silo"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"python_example_1.vpe"</font><font color="#4000C0">)</font>
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"MyExpression"</font><font color="#4000C0">,</font> <font color="#4000C0">[</font><font color="#008000">'d'</font><font color="#4000C0">,</font> <font color="#008000">'p'</font><font color="#4000C0">]</font><font color="#4000C0">,</font> <font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"MyExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_05"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">script_file</font> <font color="#4000C0">=</font> <font color="#000000">pjoin</font><font color="#4000C0">(</font><font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">split</font><font color="#4000C0">(</font><font color="#000000">TestScriptPath</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">[</font><font color="#0080C0">0</font><font color="#4000C0">]</font><font color="#4000C0">,</font><font color="#008000">"python_example_2.vpe"</font><font color="#4000C0">)</font>
+<font color="#000000">DefinePythonExpression</font><font color="#4000C0">(</font><font color="#008000">"MyExpression"</font><font color="#4000C0">,</font> <font color="#4000C0">(</font><font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#000000">file</font><font color="#4000C0">=</font><font color="#000000">script_file</font><font color="#4000C0">)</font>
+<font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"MyExpression"</font><font color="#4000C0">)</font>
+<font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"py_exprs_06"</font><font color="#4000C0">)</font>
+<font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
