@@ -1,0 +1,474 @@
+<html><body bgcolor="#e0e0e0"><head><title>databases/vtk.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  vtk.py </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Programmer: Mark C. Miller </font>
+<font color="#a02030">#  Date:       October 28, 2004 </font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications:</font>
+<font color="#a02030">#    Kathleen Bonnell, Fri Sep 23 10:55:44 PDT 2005</font>
+<font color="#a02030">#    Re-organized code into separate methods.  Added TestXML method.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Mon May 8 15:57:12 PST 2006</font>
+<font color="#a02030">#    Added test for higher_order_triangles.vtk</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Cyrus Harrison, Thu Mar 25 09:57:34 PDT 2010</font>
+<font color="#a02030">#    Added call(s) to DrawPlots() b/c of changes to the default plot state</font>
+<font color="#a02030">#    behavior when an operator is added.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Brad Whitlock, Tue Oct 23 11:18:12 PDT 2012</font>
+<font color="#a02030">#    I added tests for NBLOCKS .visit files, cycle &amp; time, and PVTU files.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Eric Brugger, Tue Jun 25 18:20:31 PDT 2013</font>
+<font color="#a02030">#    I added a test for PVTI files.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Wed Feb 25 14:10:13 PST 2015</font>
+<font color="#a02030">#    Mesh name has been added to blocks.vtu test data, so add mesh plot</font>
+<font color="#a02030">#    to test is has been read correctly.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Tue Aug 18 14:00:16 PDT 2015</font>
+<font color="#a02030">#    Added a test for VTM files.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Thu Sep 21 14:56:25 MST 2017</font>
+<font color="#a02030">#    Added a test for PVTK files.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Edward Rusu, Mon Oct 01 15:09:24 PST 2018</font>
+<font color="#a02030">#    Added a test for vtkGhostType.</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#    Kathleen Biagas, Tue Aug 24, 2021</font>
+<font color="#a02030">#    Added a test for PVD files.</font>
+<font color="#a02030">#</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestMaterials</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Materials in VTK"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/globe_mats.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Test simple read and display of a material variable </font>
+    <font color="#a02030">#</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"FilledBoundary"</font><font color="#4000C0">,</font><font color="#008000">"materials"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_01"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Find set ids using their names</font>
+    <font color="#a02030">#</font>
+    <font color="#000000">setId1</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1</font>
+    <font color="#000000">setId2</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1</font>
+    <font color="#000000">setId3</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">1</font>
+    <font color="#000000">silr</font> <font color="#4000C0">=</font> <font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">NumSets</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#C00000">if</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"1"</font><font color="#4000C0">:</font>
+            <font color="#000000">setId1</font> <font color="#4000C0">=</font> <font color="#000000">i</font>
+        <font color="#C00000">elif</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"2"</font><font color="#4000C0">:</font>
+            <font color="#000000">setId2</font> <font color="#4000C0">=</font> <font color="#000000">i</font>
+        <font color="#C00000">elif</font> <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">SetName</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font> <font color="#4000C0">==</font> <font color="#008000">"3"</font><font color="#4000C0">:</font>
+            <font color="#000000">setId3</font> <font color="#4000C0">=</font> <font color="#000000">i</font>
+
+    <font color="#a02030">#</font>
+    <font color="#a02030"># Turn on air, but turn void and uranium off</font>
+    <font color="#a02030">#</font>
+    <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">TurnOffSet</font><font color="#4000C0">(</font><font color="#000000">setId2</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_02"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">silr</font><font color="#4000C0">.</font><font color="#000000">TurnOnSet</font><font color="#4000C0">(</font><font color="#000000">setId2</font><font color="#4000C0">)</font>
+    <font color="#000000">SetPlotSILRestriction</font><font color="#4000C0">(</font><font color="#000000">silr</font><font color="#4000C0">)</font>
+    <font color="#000000">AddOperator</font><font color="#4000C0">(</font><font color="#008000">"Slice"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_03"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TurnMaterialsOn</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/globe_mats.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestXML</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"VTK XML-style data files"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/curv2d.vts"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_04"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"p"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_05"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_06"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_07"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vel"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_08"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/curv2d.vts"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/curv3d.vts"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_09"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"p"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_10"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_11"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_12"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_13"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"w"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_14"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vel"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_15"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/curv3d.vts"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/rect3d.vtr"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_16"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"p"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_17"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"t"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_18"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_19"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_20"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"w"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_21"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vel"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_22"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/rect3d.vtr"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/ucd2d.vtu"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"d"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_23"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"speed"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_24"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_25"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"v"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_26"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteActivePlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"vel"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_27"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/ucd2d.vtu"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestHigherOrder</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Quadratic triangles in VTK"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/higher_order_triangles.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"highorder_triangles"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.429056</font><font color="#4000C0">,</font> <font color="#0080C0">0.759111</font><font color="#4000C0">,</font> <font color="#0080C0">0.489553</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">focus</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.901832</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.39065</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.184638</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">30</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">3.4641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">3.4641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imagePan</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.45106</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">perspective</font> <font color="#4000C0">=</font> <font color="#0080C0">1</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">eyeAngle</font> <font color="#4000C0">=</font> <font color="#0080C0">2</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotationSet</font> <font color="#4000C0">=</font> <font color="#0080C0">0</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">centerOfRotation</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_28"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DefineScalarExpression</font><font color="#4000C0">(</font><font color="#008000">"zoneid"</font><font color="#4000C0">,</font> <font color="#008000">"zoneid(highorder_triangles)"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"zoneid"</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font> <font color="#4000C0">=</font> <font color="#000000">PseudocolorAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">p</font><font color="#4000C0">.</font><font color="#000000">colorTableName</font> <font color="#4000C0">=</font> <font color="#008000">"levels"</font>
+    <font color="#000000">SetPlotOptions</font><font color="#4000C0">(</font><font color="#000000">p</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_29"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/higher_order_triangles.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestNBLOCKS</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"!NBLOCKS in a .visit file"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/visitfile/dbA.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"mesh/ireg"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_30"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># See that there are multiple time steps.</font>
+    <font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#0080C0">5</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_31"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># See that there are 2 domains</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"domains"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_32"</font><font color="#4000C0">)</font>
+
+    <font color="#a02030"># Test that we can get the cycle and time out.</font>
+    <font color="#000000">txt</font> <font color="#4000C0">=</font> <font color="#008000">""</font>
+    <font color="#C00000">for</font> <font color="#000000">i</font> <font color="#C00000">in</font> <font color="#000000">range</font><font color="#4000C0">(</font><font color="#0080C0">10</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+        <font color="#000000">SetTimeSliderState</font><font color="#4000C0">(</font><font color="#000000">i</font><font color="#4000C0">)</font>
+        <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Cycle"</font><font color="#4000C0">)</font>
+        <font color="#000000">cycle</font> <font color="#4000C0">=</font> <font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">Query</font><font color="#4000C0">(</font><font color="#008000">"Time"</font><font color="#4000C0">)</font>
+        <font color="#000000">time</font> <font color="#4000C0">=</font> <font color="#000000">GetQueryOutputValue</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+        <font color="#000000">txt</font> <font color="#4000C0">=</font> <font color="#000000">txt</font> <font color="#4000C0">+</font> <font color="#008000">"Cycle: %d, Time: %g\n"</font> <font color="#4000C0">%</font> <font color="#4000C0">(</font><font color="#000000">cycle</font><font color="#4000C0">,</font> <font color="#000000">time</font><font color="#4000C0">)</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"vtk_33"</font><font color="#4000C0">,</font> <font color="#000000">txt</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/visitfile/dbA.visit"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestPVTU</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVTU files"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/blocks.pvtu"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"MatNum"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_34"</font><font color="#4000C0">)</font>
+    <font color="#a02030"># MeshName recently added, so test.</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"blocks"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_34a"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/blocks.pvtu"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestPVTI</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVTI files"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth.pvti"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Truecolor"</font><font color="#4000C0">,</font> <font color="#008000">"PNGImage"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_35"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth.pvti"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestMixedTopology</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"2D Unstructured grids with lines"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/test_bound.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"data_cells_with_bound"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_36"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/test_bound.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVTM</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"VTM files"</font><font color="#4000C0">)</font>
+    <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#008000">"files.vtm"</font>
+    <font color="#000000">fN</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/MultiBlock/%s"</font><font color="#4000C0">%</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"Blocks"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_37"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">mmd</font> <font color="#4000C0">=</font> <font color="#000000">GetMetaData</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">GetMeshes</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">f</font> <font color="#4000C0">+</font> <font color="#008000">":    Groups: "</font> <font color="#4000C0">+</font> <font color="#008000">", "</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">mmd</font><font color="#4000C0">.</font><font color="#000000">groupNames</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#008000">"     Blocks: "</font> <font color="#4000C0">+</font> <font color="#008000">", "</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">mmd</font><font color="#4000C0">.</font><font color="#000000">blockNames</font><font color="#4000C0">)</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+
+    <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#008000">"files_grouped.vtm"</font>
+    <font color="#000000">fN</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/MultiBlock/%s"</font><font color="#4000C0">%</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"Blocks"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_38"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"Groups"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_39"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">mmd</font> <font color="#4000C0">=</font> <font color="#000000">GetMetaData</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">GetMeshes</font><font color="#4000C0">(</font><font color="#0080C0">0</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#000000">f</font> <font color="#4000C0">+</font> <font color="#008000">":    Groups: "</font> <font color="#4000C0">+</font> <font color="#008000">", "</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">mmd</font><font color="#4000C0">.</font><font color="#000000">groupNames</font><font color="#4000C0">)</font>
+    <font color="#000000">s</font> <font color="#4000C0">=</font> <font color="#000000">s</font> <font color="#4000C0">+</font> <font color="#008000">"    Blocks: "</font> <font color="#4000C0">+</font> <font color="#008000">", "</font><font color="#4000C0">.</font><font color="#000000">join</font><font color="#4000C0">(</font><font color="#000000">mmd</font><font color="#4000C0">.</font><font color="#000000">blockNames</font><font color="#4000C0">)</font> <font color="#4000C0">+</font> <font color="#008000">"\n"</font>
+    <font color="#000000">TestText</font><font color="#4000C0">(</font><font color="#008000">"vtk_40"</font><font color="#4000C0">,</font> <font color="#000000">s</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestPVTK</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVTK files"</font><font color="#4000C0">)</font>
+    <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#008000">"earth.pvtk"</font>
+    <font color="#000000">fN</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/pvtk/%s"</font><font color="#4000C0">%</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Truecolor"</font><font color="#4000C0">,</font> <font color="#008000">"PNGImage"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_41"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+
+    <font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#008000">"dbA.pvtk"</font>
+    <font color="#000000">fN</font> <font color="#4000C0">=</font> <font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/pvtk/dbA/%s"</font><font color="#4000C0">%</font><font color="#000000">f</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"mesh/ireg"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_42"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">fN</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestVTKGhostType</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"VTK ghost types"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/vtkGhostType.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"internal_var_GhostZones"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_43"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"internal_var_GhostNodes"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_44"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"Mesh_gnz"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_45"</font><font color="#4000C0">)</font>
+
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/vtkGhostType.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestDBExpressions</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"Database Expressions in VTK"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/higher_order_triangles.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Mesh"</font><font color="#4000C0">,</font> <font color="#008000">"highorder_triangles"</font><font color="#4000C0">)</font><font color="#4000C0">;</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"x"</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Vector"</font><font color="#4000C0">,</font> <font color="#008000">"posvec"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+    <font color="#000000">v</font> <font color="#4000C0">=</font> <font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewNormal</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.429056</font><font color="#4000C0">,</font> <font color="#0080C0">0.759111</font><font color="#4000C0">,</font> <font color="#0080C0">0.489553</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">viewUp</font> <font color="#4000C0">=</font> <font color="#4000C0">(</font><font color="#4000C0">-</font><font color="#0080C0">0.901832</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.39065</font><font color="#4000C0">,</font> <font color="#4000C0">-</font><font color="#0080C0">0.184638</font><font color="#4000C0">)</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">parallelScale</font> <font color="#4000C0">=</font> <font color="#0080C0">1.73205</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">nearPlane</font> <font color="#4000C0">=</font> <font color="#4000C0">-</font><font color="#0080C0">3.4641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">farPlane</font> <font color="#4000C0">=</font> <font color="#0080C0">3.4641</font>
+    <font color="#000000">v</font><font color="#4000C0">.</font><font color="#000000">imageZoom</font> <font color="#4000C0">=</font> <font color="#0080C0">1.45106</font>
+    <font color="#000000">SetView3D</font><font color="#4000C0">(</font><font color="#000000">v</font><font color="#4000C0">)</font>
+
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_46"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_test_data/higher_order_triangles.vtk"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+<font color="#C00000">def</font> <font color="#000000">TestPVD</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, single pvti file, no time, no groups"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Truecolor"</font><font color="#4000C0">,</font> <font color="#008000">"PNGImage"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_01"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, multiple vtr files, single time, no groups"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multiRect3d.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"u"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_02"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multiRect3d.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, multiple pvtr files, multiple times, no groups"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_pvtr.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"radial"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_03"</font><font color="#4000C0">)</font>
+    <font color="#000000">TimeSliderSetState</font><font color="#4000C0">(</font><font color="#0080C0">5</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_04"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_pvtr.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, multiple vtr files, multiple times, groups"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_part_vtr.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Subset"</font><font color="#4000C0">,</font> <font color="#008000">"parts"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_05"</font><font color="#4000C0">)</font>
+    <font color="#000000">ChangeActivePlotsVar</font><font color="#4000C0">(</font><font color="#008000">"blocks"</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_06"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_part_vtr.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, multiple vtm files,multiple times"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_vtm.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Pseudocolor"</font><font color="#4000C0">,</font> <font color="#008000">"radial"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_07"</font><font color="#4000C0">)</font>
+    <font color="#000000">TimeSliderSetState</font><font color="#4000C0">(</font><font color="#0080C0">5</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_08"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/multi_dir/multi_time_vtm.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+    <font color="#000000">TestSection</font><font color="#4000C0">(</font><font color="#008000">"PVD, multiple pvti files, multiple times"</font><font color="#4000C0">)</font>
+    <font color="#000000">OpenDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth_multiTime/earth_time.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+    <font color="#000000">AddPlot</font><font color="#4000C0">(</font><font color="#008000">"Truecolor"</font><font color="#4000C0">,</font> <font color="#008000">"PNGImage"</font><font color="#4000C0">)</font>
+    <font color="#000000">DrawPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">ResetView</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_09"</font><font color="#4000C0">)</font>
+    <font color="#000000">TimeSliderNextState</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_10"</font><font color="#4000C0">)</font>
+    <font color="#000000">TimeSliderNextState</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_11"</font><font color="#4000C0">)</font>
+    <font color="#000000">TimeSliderNextState</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">Test</font><font color="#4000C0">(</font><font color="#008000">"vtk_pvd_12"</font><font color="#4000C0">)</font>
+    <font color="#000000">DeleteAllPlots</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+    <font color="#000000">CloseDatabase</font><font color="#4000C0">(</font><font color="#000000">data_path</font><font color="#4000C0">(</font><font color="#008000">"vtk_xml_test_data/earth_multiTime/earth_time.pvd"</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+
+
+<font color="#000000">TestMaterials</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestXML</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestHigherOrder</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestNBLOCKS</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestPVTU</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestPVTI</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestMixedTopology</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVTM</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestPVTK</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestVTKGhostType</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestDBExpressions</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestPVD</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
