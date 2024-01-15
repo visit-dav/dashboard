@@ -1,0 +1,58 @@
+<html><body bgcolor="#e0e0e0"><head><title>unit/default_methods.py</title></head><pre><font face="Lucida,Courier New"><font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#a02030">#  CLASSES: nightly</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Test Case:  default_methods.py</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Tests:      Tests default method interface of the visit module</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Cyrus Harrison, Mon Jul 20 11:32:42 PDT 2020</font>
+<font color="#a02030">#</font>
+<font color="#a02030">#  Modifications</font>
+<font color="#a02030">#    Mark C. Miller, Thu Dec 16 16:43:39 PST 2021</font>
+<font color="#a02030">#    Wrap in TestValueXX calls so that we really do test behavior and not</font>
+<font color="#a02030">#    just that something doesn't fail due to exception. Add tests for</font>
+<font color="#a02030">#    WriteScript.</font>
+<font color="#a02030"># ----------------------------------------------------------------------------</font>
+<font color="#C00000">import</font> <font color="#000000">os</font><font color="#4000C0">,</font> <font color="#000000">sys</font><font color="#4000C0">,</font> <font color="#000000">filecmp</font>
+
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"GetDebugLevel()"</font><font color="#4000C0">,</font> <font color="#000000">GetDebugLevel</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#0080C0">0</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Do something to create an error (not a python exception) so that we</font>
+<font color="#a02030"># can get something other than the empty string from GetLastError()</font>
+<font color="#000000">DeleteWindow</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"GetLastError()"</font><font color="#4000C0">,</font> <font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#008000">"Can't delete the last window."</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Test that we can clear the last error too</font>
+<font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#0080C0">1</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"Clearing GetLastError()"</font><font color="#4000C0">,</font> <font color="#000000">GetLastError</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#008000">""</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># This version number test assumes 3, single digits</font>
+<font color="#000000">TestValueGE</font><font color="#4000C0">(</font><font color="#008000">"Version()"</font><font color="#4000C0">,</font> <font color="#000000">int</font><font color="#4000C0">(</font><font color="#000000">Version</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">.</font><font color="#000000">replace</font><font color="#4000C0">(</font><font color="#008000">'.'</font><font color="#4000C0">,</font><font color="#008000">''</font><font color="#4000C0">)</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#0080C0">321</font><font color="#4000C0">)</font>
+
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"LocalNameSpace()"</font><font color="#4000C0">,</font> <font color="#000000">LocalNameSpace</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">None</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># The long file name test is relevant only on Windows</font>
+<font color="#a02030"># But, we should really have an example of a short file name</font>
+<font color="#a02030"># there that LongFileName expands and we confirm matches expected</font>
+<font color="#C00000">if</font> <font color="#000000">sys</font><font color="#4000C0">.</font><font color="#000000">platform</font><font color="#4000C0">.</font><font color="#000000">startswith</font><font color="#4000C0">(</font><font color="#008000">"win"</font><font color="#4000C0">)</font><font color="#4000C0">:</font>
+    <font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"LongFileName()"</font><font color="#4000C0">,</font> <font color="#000000">LongFileName</font><font color="#4000C0">(</font><font color="#008000">"myfile.txt"</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#008000">"myfile.txt"</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Test two ways of using WriteScript</font>
+<font color="#000000">f</font> <font color="#4000C0">=</font> <font color="#000000">open</font><font color="#4000C0">(</font><font color="#008000">'foo.py'</font><font color="#4000C0">,</font> <font color="#008000">'wt'</font><font color="#4000C0">)</font>
+<font color="#000000">WriteScript</font><font color="#4000C0">(</font><font color="#000000">f</font><font color="#4000C0">)</font>
+<font color="#000000">f</font><font color="#4000C0">.</font><font color="#000000">close</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000">WriteScript</font><font color="#4000C0">(</font><font color="#008000">'bar.py'</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueEQ</font><font color="#4000C0">(</font><font color="#008000">"WriteScript('foo.py') == WriteScript(f)"</font><font color="#4000C0">,</font> <font color="#000000">filecmp</font><font color="#4000C0">.</font><font color="#000000">cmp</font><font color="#4000C0">(</font><font color="#008000">'foo.py'</font><font color="#4000C0">,</font><font color="#008000">'bar.py'</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#C00000">True</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueGT</font><font color="#4000C0">(</font><font color="#008000">"WriteScript() file size"</font><font color="#4000C0">,</font> <font color="#000000">os</font><font color="#4000C0">.</font><font color="#000000">path</font><font color="#4000C0">.</font><font color="#000000">getsize</font><font color="#4000C0">(</font><font color="#008000">'foo.py'</font><font color="#4000C0">)</font><font color="#4000C0">,</font> <font color="#0080C0">3000</font><font color="#4000C0">)</font>
+
+<font color="#a02030"># Test dir() on some objects</font>
+<font color="#000000">dout</font> <font color="#4000C0">=</font> <font color="#000000">dir</font><font color="#4000C0">(</font><font color="#000000">SILRestriction</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">"SetsInCategory in dir(SILAttributes())"</font><font color="#4000C0">,</font> <font color="#000000">dout</font><font color="#4000C0">,</font> <font color="#008000">'SetsInCategory'</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">"SetIndex in dir(SILAttributes())"</font><font color="#4000C0">,</font> <font color="#000000">dout</font><font color="#4000C0">,</font> <font color="#008000">'SetIndex'</font><font color="#4000C0">)</font>
+<font color="#000000">dout</font> <font color="#4000C0">=</font> <font color="#000000">dir</font><font color="#4000C0">(</font><font color="#000000">View3DAttributes</font><font color="#4000C0">(</font><font color="#4000C0">)</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">"RotateAxis in dir(View3Dattributes())"</font><font color="#4000C0">,</font> <font color="#000000">dout</font><font color="#4000C0">,</font> <font color="#008000">'RotateAxis'</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">"GetImageZoom in dir(View3Dattributes())"</font><font color="#4000C0">,</font> <font color="#000000">dout</font><font color="#4000C0">,</font> <font color="#008000">'GetImageZoom'</font><font color="#4000C0">)</font>
+<font color="#000000">TestValueIN</font><font color="#4000C0">(</font><font color="#008000">"SetImagePan in dir(View3Dattributes())"</font><font color="#4000C0">,</font> <font color="#000000">dout</font><font color="#4000C0">,</font> <font color="#008000">'SetImagePan'</font><font color="#4000C0">)</font>
+
+<font color="#000000">Exit</font><font color="#4000C0">(</font><font color="#4000C0">)</font>
+<font color="#000000"></font></font></pre></body></html>
