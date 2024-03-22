@@ -1,0 +1,67 @@
+<SCRIPT TYPE="text/javascript">
+<!--
+function popup(mylink, name)
+{
+if (! window.focus)return true;
+var href;
+if (typeof(mylink) == 'string')
+   href=mylink;
+else
+   href=mylink.href;
+window.open(href,name,'width=500,height=500,scrollbars=no');
+return false;
+}
+//-->
+</SCRIPT>
+<html><head><title>Results for queries/flatten.py</title></head>
+<body bgcolor="#a0a0f0">
+<H1>Results of VisIt Regression Test - <a href=queries_flatten_py.html>queries/flatten</a></H1>
+<table border>
+ <tr>
+  <td rowspan=2><b><i>Test Case</b></i></td>
+  <td colspan=2 align=center><b><i>Errors</b></i></td>
+  <td colspan=3 align=center><b><i>Images</b></i></td>
+ </tr>
+ <tr>
+  <td>%Diffs</td>
+  <td>Maximum</td>
+  <td>Baseline</td>
+  <td>Current</td>
+  <td>Diff Map</td>
+ </tr>
+
+ <tr>
+  <td colspan=6 align=center bgcolor="#0000ff"><font color="#ffffff"><b>/usr/WS1/visit/test_trunk/visit/build/testdata/silo_hdf5_test_data/rect2d.silo_NodeData</b></font></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">ShouldHaveNodeTable</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">ShouldHaveNodeColumnNames</td>
+  <td colspan=5 align=left><pre> nodeColumnNames .in. <br>{'nodeTable': <PyTable object at 0x155540438f90>, 'nodeColumnNames': ('nid', 'vec_nid/c0', 'vec_nid/c1', 'vec_nid/c2', 'nodeIds', 'nodeDomains')} (prec=5, at=1) : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol0Name</td>
+  <td colspan=5 align=left><pre> "nid" .eq. "nid" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol1Name</td>
+  <td colspan=5 align=left><pre> "vec_nid/c0" .eq. "vec_nid/c0" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol2Name</td>
+  <td colspan=5 align=left><pre> "vec_nid/c1" .eq. "vec_nid/c1" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol3Name</td>
+  <td colspan=5 align=left><pre> "vec_nid/c2" .eq. "vec_nid/c2" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol4Name</td>
+  <td colspan=5 align=left><pre> "nodeIds" .eq. "nodeIds" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">NodeCol5Name</td>
+  <td colspan=5 align=left><pre> "nodeDomains" .eq. "nodeDomains" : True</pre></td>
+ </tr>
