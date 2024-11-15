@@ -1,0 +1,32 @@
+name: Keep latest 60 results
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at midnight every day
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Cleanup old test results
+      run: |
+        # Count the number of top-level directories (assuming they are dated test results)
+        total_dirs=$(ls -d */ | wc -l)
+        echo "Total directories: $total_dirs"
+        
+        # If there are more than 75 directories, delete the oldest
+        if [ $total_dirs -gt 75 ]; then
+          # List directories sorted by date and delete the oldest
+          ls -dt */ | tail -n +76 | xargs rm -rf
+        fi
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add -A
+        git commit -m "Removed old test results to maintain last 60 results" || echo "No changes to commit"
+        git push
