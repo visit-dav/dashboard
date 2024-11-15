@@ -18,10 +18,10 @@ jobs:
         total_dirs=$(ls -d */ | wc -l)
         echo "Total directories: $total_dirs"
         
-        # If there are more than 75 directories, delete the oldest
-        if [ $total_dirs -gt 75 ]; then
+        # If there are more than 60 directories, delete the oldest
+        if [ $total_dirs -gt 60 ]; then
           # List directories sorted by date and delete the oldest
-          ls -dt */ | tail -n +76 | xargs rm -rf
+          ls -dt */ | tail -n +61 | xargs rm -rf
         fi
 
     - name: Commit and push changes
