@@ -2,7 +2,12 @@ name: Keep latest 60 results
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight every day
+    # Runs at 6 AM UTC from November to March (10 PM PST)
+    - cron: '0 6 1-14 3,11 *'
+    - cron: '0 6 * 12-2 *'
+    # Runs at 5 AM UTC from March to November (10 PM PDT)
+    - cron: '0 5 15-31 3,11 *'
+    - cron: '0 5 * 4-10 *'
   workflow_dispatch:  # Allows manual trigger from the GitHub UI
 
 jobs:
