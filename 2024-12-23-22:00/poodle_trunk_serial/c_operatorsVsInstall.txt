@@ -1,5 +1,0 @@
-{   'CartographicProjection': 'xml2cmake failed',
-    'CracksClipper': 'xml2cmake failed',
-    'RadialResample': 'xml2cmake failed',
-    'Slice': 'xml2cmake failed',
-    'Threshold': 'xml2cmake failed'}
