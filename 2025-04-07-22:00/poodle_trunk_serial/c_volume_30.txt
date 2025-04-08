@@ -1,0 +1,2 @@
+Warning The data was resampled because the data is not on a rectilinear grid. The data and if needed the opacity have been resampled on to a rectilinear grid.
+If results are not satisfactory, modify the resampling options.
