@@ -1,0 +1,12 @@
+{   'BOV': 'cmake --build failed',
+    'Blueprint': 'cmake --build failed',
+    'CGNS': 'cmake --build failed',
+    'Cale': 'cmake --build failed',
+    'Claw': 'cmake --build failed',
+    'Exodus': 'cmake --build failed',
+    'FITS': 'cmake --build failed',
+    'H5Part': 'cmake --build failed',
+    'MFEM': 'cmake --build failed',
+    'Mili': 'cmake --build failed',
+    'SAMRAI': 'cmake --build failed',
+    'VTK': 'cmake --build failed'}
