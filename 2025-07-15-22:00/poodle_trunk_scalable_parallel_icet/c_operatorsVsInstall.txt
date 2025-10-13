@@ -1,5 +1,0 @@
-{   'CartographicProjection': 'cmake --build failed',
-    'CracksClipper': 'cmake --build failed',
-    'RadialResample': 'cmake --build failed',
-    'Slice': 'cmake configure failed',
-    'Threshold': 'cmake --build failed'}

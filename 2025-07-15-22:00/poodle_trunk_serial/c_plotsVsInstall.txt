@@ -1,4 +1,0 @@
-{   'Contour': 'cmake --build failed',
-    'Label': 'cmake --build failed',
-    'Molecule': 'cmake --build failed',
-    'Tensor': 'cmake --build failed'}
