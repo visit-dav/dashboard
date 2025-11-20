@@ -1,0 +1,36 @@
+VisIt could not read from the file "VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database".
+
+The generated error message was:
+
+There was an error opening VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database. It may be an invalid file.  VisIt tried using the following file format readers to open the file: <No suitable plugins were identified>
+
+The following error(s) may be helpful in identifying the problem:
+The file "VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database" does not exist.
+sources = ()
+windows = (1, 2)
+activeWindow = 1
+iconifiedFlag = 0
+autoUpdateFlag = 0
+replacePlots = 0
+applyOperator = 1
+applySelection = 1
+applyWindow = 0
+executing = 0
+windowLayout = 1
+makeDefaultConfirm = 1
+cloneWindowOnFirstRef = 0
+automaticallyAddOperator = 0
+tryHarderCyclesTimes = 0
+treatAllDBsAsTimeVarying = 0
+createMeshQualityExpressions = 1
+createTimeDerivativeExpressions = 1
+createVectorMagnitudeExpressions = 1
+newPlotsInheritSILRestriction = 1
+userDirForSessionFiles = 0
+saveCrashRecoveryFile = 1
+ignoreExtentsFromDbs = 0
+expandNewPlots = 0
+userRestoreSessionFile = 0
+precisionType = Native  # Float, Native, Double
+backendType = VTK  # VTK, VTKM
+removeDuplicateNodes = 0

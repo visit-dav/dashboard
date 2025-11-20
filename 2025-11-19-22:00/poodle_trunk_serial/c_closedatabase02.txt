@@ -1,0 +1,8 @@
+VisIt could not read from the file "VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database".
+
+The generated error message was:
+
+There was an error opening VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database. It may be an invalid file.  VisIt tried using the following file format readers to open the file: <No suitable plugins were identified>
+
+The following error(s) may be helpful in identifying the problem:
+The file "VISIT_TOP_DIR/data/silo_hdf5_test_data/wave*.silo database" does not exist.

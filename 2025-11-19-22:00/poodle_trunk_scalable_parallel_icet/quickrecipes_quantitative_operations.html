@@ -1,0 +1,102 @@
+<SCRIPT TYPE="text/javascript">
+<!--
+function popup(mylink, name)
+{
+if (! window.focus)return true;
+var href;
+if (typeof(mylink) == 'string')
+   href=mylink;
+else
+   href=mylink.href;
+window.open(href,name,'width=500,height=500,scrollbars=no');
+return false;
+}
+//-->
+</SCRIPT>
+<html><head><title>Results for quickrecipes/quantitative_operations.py</title></head>
+<body bgcolor="#a0a0f0">
+<H1>Results of VisIt Regression Test - <a href=quickrecipes_quantitative_operations_py.html>quickrecipes/quantitative_operations</a></H1>
+<table border>
+ <tr>
+  <td rowspan=2><b><i>Test Case</b></i></td>
+  <td colspan=2 align=center><b><i>Errors</b></i></td>
+  <td colspan=3 align=center><b><i>Images</b></i></td>
+ </tr>
+ <tr>
+  <td>%Diffs</td>
+  <td>Maximum</td>
+  <td>Baseline</td>
+  <td>Current</td>
+  <td>Diff Map</td>
+ </tr>
+
+ <tr>
+  <td bgcolor="#ff0000">defining expressions error message</td>
+  <td colspan=5 align=left><pre> "Cannot create a plot until a database has been opened." .eq. "" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">defining expressions exceptions</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">pick string</td>
+  <td colspan=5 align=left><pre> hgslice:  <nodal> = 2.472 .in. <br>Either no Pick has been performed, or the last Pick was invalid.
+ (prec=5, at=0) : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">pick string</td>
+  <td colspan=5 align=left><pre> hgslice:  <nodal> = 4.043 .in. <br>Either no Pick has been performed, or the last Pick was invalid.
+ (prec=5, at=0) : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">pick error message</td>
+  <td colspan=5 align=left><pre> "Pick requires an active non-hidden Plot.
+Please select a plot and try again.
+" .eq. "" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">pick exceptions</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">lineout 1 error message</td>
+  <td colspan=5 align=left><pre> "Lineout requires an active non-hidden Plot.
+Please select a plot and try again.
+" .eq. "" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">lineout 1 exceptions</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">lineout 2 exception "'NoneType' object is not subscriptable":114</td>
+  <td colspan=5 align=left><pre> "False" .eq. "True" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">query error message</td>
+  <td colspan=5 align=left><pre> "NumNodes requires an active non-hidden Plot.
+Please select a plot and try again.
+" .eq. "" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">query exceptions</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">finding the min and max error message</td>
+  <td colspan=5 align=left><pre> "MinMax requires an active non-hidden Plot.
+Please select a plot and try again.
+" .eq. "" : False</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#00ff00">finding the min and max exceptions</td>
+  <td colspan=5 align=left><pre> "True" .eq. "True" : True</pre></td>
+ </tr>
+ <tr>
+  <td bgcolor="#ff0000">csv query over time exception "'NoneType' object is not subscriptable":206</td>
+  <td colspan=5 align=left><pre> "False" .eq. "True" : False</pre></td>
+ </tr>
+</table>
+<p>Final Return Code: 113</p>
+</body>
+</html>

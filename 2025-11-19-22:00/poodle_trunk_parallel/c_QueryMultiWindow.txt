@@ -1,0 +1,32 @@
+Window 1 queries:
+
+
+Either no Pick has been performed, or the last Pick was invalid.
+
+Either no Pick has been performed, or the last Pick was invalid.
+
+
+
+
+
+
+Window 2 queries:
+
+
+Either no Pick has been performed, or the last Pick was invalid.
+
+Either no Pick has been performed, or the last Pick was invalid.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
