@@ -1,0 +1,1 @@
+Using scalable rendering on frame 0: true
