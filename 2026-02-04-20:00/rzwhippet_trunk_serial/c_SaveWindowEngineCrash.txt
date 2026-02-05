@@ -1,0 +1,6 @@
+save 0 succeeded
+save 1 succeeded
+save 2 succeeded
+save 3 had exception "<built-in method SaveWindow of NoneType object at 0x516700> returned NULL without setting an exception"
+save 4 had exception "<built-in method SaveWindow of NoneType object at 0x516700> returned NULL without setting an exception"
+save 5 had exception "<built-in method SaveWindow of NoneType object at 0x516700> returned NULL without setting an exception"

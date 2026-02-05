@@ -1,0 +1,2 @@
+MinMax requires an active non-hidden Plot.
+Please select a plot and try again.

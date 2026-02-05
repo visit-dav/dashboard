@@ -1,0 +1,33 @@
+For 10 contours of noise.silo (hardyglobal)
+
+
+MinMax Actual:
+MinMax Original:
+
+
+
+
+
+For 4 contours of noise.silo (hardyglobal)
+
+
+MinMax Actual:
+MinMax Original:
+
+
+
+
+
+For 10 contours of rect3d.silo (d)
+
+
+
+
+
+
+For 4 contours of rect3d.silo (d)
+
+
+
+
+

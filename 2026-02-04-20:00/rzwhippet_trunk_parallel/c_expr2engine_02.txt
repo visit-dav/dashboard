@@ -1,0 +1,4 @@
+Expressions:
+expression 1: user_defined1 = u * u
+expression 2: user_defined2 = v + v
+expression 3: user_defined3 = {u, v, w}

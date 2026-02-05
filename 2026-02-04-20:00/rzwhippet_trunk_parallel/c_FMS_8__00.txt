@@ -1,0 +1,37 @@
+hasTemporalExtents = 0
+minTemporalExtents = 0
+maxTemporalExtents = 0
+numStates = 0
+isVirtualDatabase = 0
+mustRepopulateOnStateChange = 0
+mustAlphabetizeVariables = 1
+formatCanDoDomainDecomposition = 0
+formatCanDoMultires = 0
+useCatchAllMesh = 0
+timeStepPath = ""
+timeStepNames = ()
+cycles = ()
+cyclesAreAccurate = ()
+times = ()
+timesAreAccurate = ()
+databaseName = ""
+fileFormat = ""
+databaseComment = ""
+#meshes does not contain any avtMeshMetaData objects.
+#subsets does not contain any avtSubsetsMetaData objects.
+#scalars does not contain any avtScalarMetaData objects.
+#vectors does not contain any avtVectorMetaData objects.
+#tensors does not contain any avtTensorMetaData objects.
+#symmTensors does not contain any avtSymmetricTensorMetaData objects.
+#arrays does not contain any avtArrayMetaData objects.
+#materials does not contain any avtMaterialMetaData objects.
+#species does not contain any avtSpeciesMetaData objects.
+#curves does not contain any avtCurveMetaData objects.
+#labels does not contain any avtLabelMetaData objects.
+#defaultPlots does not contain any avtDefaultPlotMetaData objects.
+isSimulation = 0
+#genericCommands does not contain any avtSimulationCommandSpecification objects.
+#customCommands does not contain any avtSimulationCommandSpecification objects.
+suggestedDefaultSILRestriction = ()
+replacementMask = -65
+
