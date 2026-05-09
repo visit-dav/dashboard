@@ -1,2 +1,0 @@
-Time values:
-Time=0

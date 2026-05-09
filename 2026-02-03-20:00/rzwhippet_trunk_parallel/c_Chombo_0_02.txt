@@ -1,2 +1,0 @@
-Number of states: 1
-Cycle=0, Time=0
