@@ -1,0 +1,12 @@
+{   'BOV': 'cmake configure failed',
+    'Blueprint': 'cmake configure failed',
+    'CGNS': 'cmake configure failed',
+    'Cale': 'cmake configure failed',
+    'Claw': 'cmake configure failed',
+    'Exodus': 'cmake configure failed',
+    'FITS': 'cmake configure failed',
+    'H5Part': 'cmake configure failed',
+    'MFEM': 'cmake configure failed',
+    'Mili': 'cmake configure failed',
+    'SAMRAI': 'cmake configure failed',
+    'VTK': 'cmake configure failed'}
