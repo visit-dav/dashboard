@@ -1,0 +1,10 @@
+{
+  "centroid": [
+    1.0,
+    0.0,
+    0.0
+  ],
+  "override_centroid": 1,
+  "radius": 0.9894682403991216,
+  "spherical_compactness_factor": 0.49632241909267033
+}
